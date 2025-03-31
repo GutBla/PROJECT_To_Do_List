@@ -1,0 +1,26 @@
+# Entornos virtuales de Python
+venv/
+env/
+
+# Archivos compilados y caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos de configuración o variables de entorno
+*.env
+
+# Archivos de registro y temporales
+*.log
+*.tmp
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Ignorar la carpeta de configuración del IDE (PyCharm/IntelliJ IDEA)
+.idea/
+
+# Si usas VSCode, puedes incluir:
+.vscode/
+
