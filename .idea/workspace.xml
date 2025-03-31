@@ -4,13 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1c89abd9-e29b-4847-992c-b26539ba26c7" name="Changes" comment="" />
+    <list default="true" id="1c89abd9-e29b-4847-992c-b26539ba26c7" name="Changes" comment="chore(estructura): Se creó la estructura inicial del proyecto" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo"><![CDATA[{
@@ -25,7 +30,7 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "develop",
     "last_opened_file_path": "C:/Users/MSI PULSE/Documents/Jala University/Ingenieria de Software/Curso/Base de datos 2 - Database 2/5. Proyectos/project_to_do_list",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -50,11 +55,55 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1743390531276</updated>
-      <workItem from="1743390532518" duration="835000" />
+      <workItem from="1743390532518" duration="1179000" />
     </task>
+    <task id="LOCAL-00001" summary="chore(estructura): Se creó la estructura inicial del proyecto">
+      <option name="closed" value="true" />
+      <created>1743391639686</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1743391639686</updated>
+    </task>
+    <task id="LOCAL-00002" summary="chore(estructura): Se creó la estructura inicial del proyecto">
+      <option name="closed" value="true" />
+      <created>1743391712538</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1743391712538</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/develop" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="chore(estructura): Se creó la estructura inicial del proyecto" />
+    <option name="LAST_COMMIT_MESSAGE" value="chore(estructura): Se creó la estructura inicial del proyecto" />
   </component>
 </project>
