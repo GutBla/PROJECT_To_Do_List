@@ -1,6 +1,6 @@
-# TO-DO List Project
+# Proyecto: TO-DO List 🗂️
 
-![Portada To Do List](images/Portada_Base_de_Datos_To_Do_List.png)
+<img src="images/Portada_Base_de_Datos_To_Do_List.png" alt="Portada Base de Datos To Do List" width="500">
 
 ## Descripción del Proyecto
 El proyecto **TO-DO List** es una aplicación web diseñada para gestionar de manera eficiente las tareas diarias de los usuarios. La aplicación permite realizar operaciones fundamentales sobre las tareas, tales como agregar, editar, eliminar y marcar tareas como completadas. Asimismo, incluye funcionalidades para organizar las tareas por categorías y permite la autenticación de usuarios con encriptación de contraseñas, asegurando la privacidad y protección de los datos personales.
@@ -82,7 +82,7 @@ git clone https://gitlab.com/usuario/proyecto-todolist.git
 3. Guía del Usuario: Ver Guía del Usuario
 4. Notas de la Reunión: Ver Notas de la Reunión
 
-## 🚀 Contribuciones
+## Contribuciones
 
 Las contribuciones al proyecto son bienvenidas. Para colaborar con el desarrollo del proyecto, por favor siga los siguientes pasos:
 
