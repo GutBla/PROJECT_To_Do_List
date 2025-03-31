@@ -1,93 +1,104 @@
-# Project_To_Do_List
+# TO-DO List Project
+
+![Portada To Do List](images/Portada_Base_de_Datos_To_Do_List.png)
+
+## Descripción del Proyecto
+El proyecto **TO-DO List** es una aplicación web diseñada para gestionar de manera eficiente las tareas diarias de los usuarios. La aplicación permite realizar operaciones fundamentales sobre las tareas, tales como agregar, editar, eliminar y marcar tareas como completadas. Asimismo, incluye funcionalidades para organizar las tareas por categorías y permite la autenticación de usuarios con encriptación de contraseñas, asegurando la privacidad y protección de los datos personales.
+
+### Características principales
+
+- Autenticación de usuarios con encriptación de contraseñas.
+- Gestión de tareas (Agregar, Editar, Eliminar, Completar).
+- Asignación de tareas a categorías (por defecto o personalizadas).
+- Interfaz de usuario simple y adaptable.
+- Conexión a la base de datos MySQL para el almacenamiento persistente de tareas y usuarios.
+- Documentación clara sobre cómo ejecutar y mantener la aplicación.
+
+## Reglas y Convenciones del Proyecto
+
+### 1. Convenciones de Nombres
+
+Dado que el proyecto utiliza diversas tecnologías, se deberán seguir las siguientes convenciones:
+
+#### Código Fuente (Python, JavaScript, HTML, CSS)
+- **Python:**
+  - Los nombres de módulos y paquetes se escribirán en minúsculas, utilizando guiones bajos para separar palabras (ejemplo: `app.py`, `database_utils.py`).
+  - Los nombres de clases se escribirán en CamelCase (ejemplo: `UserAuthentication`, `TaskManager`).
+- **JavaScript:**
+  - Las funciones y variables se escribirán en camelCase (ejemplo: `getTaskList()`, `userLogin`).
+  - Los nombres de clases se escribirán en PascalCase (ejemplo: `TaskController`).
+- **HTML y CSS:**
+  - Los archivos deberán tener nombres descriptivos y en minúsculas (ejemplo: `index.html`, `style.css`).
+  - Para las clases CSS se recomienda la convención BEM (Block__Element--Modifier) (ejemplo: `header__title--main`).
+
+#### Archivos de Configuración y Documentación
+- Los archivos de configuración (por ejemplo, `config.py`, `.env`) y documentos de apoyo (por ejemplo, `README.md`, `LICENSE`) se nombrarán de forma clara y sin espacios, utilizando la extensión correspondiente.
+
+### 2. Convenciones de Commit
+
+Los mensajes de commit se redactarán en español y deberán seguir el siguiente formato:
 
 
+#### Tabla de Convenciones de Commit
 
-## Getting started
+| Prefijo   | Descripción                                                             | Ejemplo                                                      |
+|-----------|-------------------------------------------------------------------------|--------------------------------------------------------------|
+| feat      | Nueva funcionalidad                                                   | feat(estructura): Creación de la estructura inicial del proyecto |
+| fix       | Corrección de errores o incidencias                                   | fix(conexion): Corrección en la conexión a la base de datos    |
+| docs      | Actualización o modificaciones en la documentación                    | docs(user-guide): Actualización de la guía del usuario         |
+| style     | Cambios en el formato o presentación (sin afectar la lógica)            | style(css): Ajuste en el formato de los estilos               |
+| refactor  | Reorganización o mejoras en el código sin modificar funcionalidades     | refactor(auth): Reestructuración de la lógica de autenticación  |
+| perf      | Optimización del rendimiento                                            | perf(query): Mejora en el rendimiento de consultas a la base de datos |
+| test      | Incorporación o modificación de pruebas unitarias o de integración      | test(api): Agregado de pruebas para los endpoints de la API     |
+| chore     | Tareas de mantenimiento, actualización de dependencias o ajustes de configuración | chore(config): Actualización de la configuración del entorno    |
+| build     | Cambios en las herramientas de construcción o en el entorno de despliegue | build(webpack): Ajuste en la configuración de Webpack           |
+| ci        | Modificaciones relacionadas con la integración y despliegue continuo      | ci(gitlab): Configuración del pipeline en GitLab                |
+| revert    | Reversión de un commit previo                                           | revert(feat): Reversión del commit de creación de la estructura    |
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### 3. Política de Ramas
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- **Rama Principal (main):**
+  - La rama `main` contendrá únicamente el código listo para producción. No se debe trabajar directamente en esta rama.
+  
+- **Rama de Desarrollo (develop):**
+  - Todas las tareas de desarrollo y la integración de nuevas funcionalidades se realizarán en la rama `develop`.
+  - Los desarrolladores deberán crear ramas de trabajo a partir de `develop`, siguiendo la convención de nombres (por ejemplo, `feature/nueva-funcionalidad`, `bugfix/correccion-error-login`).
+  - Una vez finalizadas las tareas, se enviará un merge request para integrar los cambios a la rama `develop`.
+  
+- **Integración a main:**
+  - La integración de cambios a la rama `main` solo se realizará tras una revisión previa y mediante un merge request aprobado o siguiendo el procedimiento de etiquetado de versiones.
+  - No se permitirá realizar push directo a `main` sin la autorización correspondiente.
 
-## Add your files
+## Instalación y Configuración
+### 1. Clonar el Repositorio
+Para obtener una copia local del repositorio, ejecute el siguiente comando:
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
-
+```bash
+git clone https://gitlab.com/usuario/proyecto-todolist.git
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/AndreaGutierrez_Jala_U/project_to_do_list.git
-git branch -M main
-git push -uf origin main
-```
+## Documentación Adicional
+1. Diagrama ER: Ver Diagrama ER
+2. Modelo Relacional: Ver Modelo Relacional
+3. Guía del Usuario: Ver Guía del Usuario
+4. Notas de la Reunión: Ver Notas de la Reunión
 
-## Integrate with your tools
+## 🚀 Contribuciones
 
-- [ ] [Set up project integrations](https://gitlab.com/AndreaGutierrez_Jala_U/project_to_do_list/-/settings/integrations)
+Las contribuciones al proyecto son bienvenidas. Para colaborar con el desarrollo del proyecto, por favor siga los siguientes pasos:
 
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+1. Haga un fork del repositorio.
+2. Cree una nueva rama:
+    ```bash
+    git checkout -b feature/nueva-funcionalidad
+    ```
+3. Realice los cambios necesarios en el código.
+4. Haga un commit con el mensaje adecuado:
+    ```bash
+    git commit -m 'feat(nueva-funcionalidad): Descripción de la mejora'
+    ```
+5. Realice un push a su rama:
+    ```bash
+    git push origin feature/nueva-funcionalidad
+    ```
+6. Abra un Pull Request para que se revisen sus cambios.
+Gracias por su colaboración y contribuciones al proyecto.
