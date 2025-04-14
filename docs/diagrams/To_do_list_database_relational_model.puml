@@ -1,0 +1,78 @@
+@startuml Modelo Relacional Proyecto To-Do-List
+
+hide circle
+skinparam linetype ortho
+
+entity Usuario {
+  * id : INT
+  --
+  * email : VARCHAR(255)
+  * password_hash : VARCHAR(255)
+  * nombre_completo : VARCHAR(255)
+  fecha_creacion : TIMESTAMP
+  fecha_actualizacion : TIMESTAMP
+}
+
+entity CategoriaPredeterminada {
+  * id : INT
+  --
+  * nombre : VARCHAR(255)
+  descripcion : TEXT
+}
+
+entity Categoria {
+  * id : INT
+  --
+  * usuario_id : INT
+  categoria_predeterminada_id : INT
+  es_predeterminada : BOOLEAN
+  fecha_creacion : TIMESTAMP
+  fecha_actualizacion : TIMESTAMP
+}
+
+entity Tarea {
+  * id : INT
+  --
+  categoria_id : INT
+  * usuario_id : INT
+  * titulo : VARCHAR(255)
+  descripcion : TEXT
+  estado : ENUM('NUEVA', 'EN_PROGRESO', 'COMPLETADA', 'PENDIENTE')
+  fecha_vencimiento : DATE
+  fecha_creacion : TIMESTAMP
+  fecha_actualizacion : TIMESTAMP
+  fecha_completado : TIMESTAMP
+}
+
+entity Usuario_Tarea {
+  * usuario_id : INT
+  * tarea_id : INT
+  --
+  fecha_asignacion : TIMESTAMP
+  permisos : ENUM('LECTURA', 'ESCRITURA', 'PROPIETARIO')
+}
+
+Usuario ||--o{ Categoria : "1:N"
+CategoriaPredeterminada }o--o{ Categoria : "0:N (predeterminadas)"
+Categoria ||--o{ Tarea : "1:N (opcional)"
+Usuario ||--o{ Tarea : "1:N (propietario)"
+Usuario_Tarea }|--|| Usuario : "M:N (asignaciones)"
+Usuario_Tarea }|--|| Tarea : "M:N (tareas asignadas)"
+
+note top of Categoria
+  FK usuario_id -> Usuario.id (ON DELETE CASCADE)
+  FK categoria_predeterminada_id -> CategoriaPredeterminada.id (ON DELETE SET NULL)
+end note
+
+note top of Tarea
+  FK categoria_id -> Categoria.id (ON DELETE SET NULL)
+  FK usuario_id -> Usuario.id (ON DELETE CASCADE)
+end note
+
+note top of Usuario_Tarea
+  PK (usuario_id, tarea_id)
+  FK usuario_id -> Usuario.id (ON DELETE CASCADE)
+  FK tarea_id -> Tarea.id (ON DELETE CASCADE)
+end note
+
+@enduml
