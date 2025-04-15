@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Tareas - ToDo List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .task-form {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        .task-list {
+            margin-top: 20px;
+        }
+        .task {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+        }
+        .task-actions {
+            margin-top: 10px;
+        }
+        .task-category {
+            font-style: italic;
+            color: #666;
+        }
+        .task-due {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        .task-section {
+    margin-bottom: 30px;
+    }
+
+    .task {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .task-actions {
+        margin-top: 10px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .task-category {
+        font-style: italic;
+        color: #666;
+        margin: 5px 0;
+    }
+
+    .task-due {
+        color: #4CAF50;
+        font-weight: bold;
+        margin: 5px 0;
+    }
+
+    .task-due.overdue {
+        color: #f44336;
+    }
+
+    select {
+        padding: 5px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+
+    button {
+        padding: 8px 12px;
+        cursor: pointer;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    #cancelEdit {
+        background-color: #f44336;
+        margin-left: 10px;
+    }
+
+    #cancelEdit:hover {
+        background-color: #d32f2f;
+    }
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Mis Tareas</h1>
+        <div>
+            <span>Hola, {{ usuario.nombre_completo }}!</span>
+            <a href="/logout" style="margin-left: 15px;">Cerrar sesión</a>
+        </div>
+    </div>
+    
+    <div class="task-form">
+        <h2>Nueva Tarea</h2>
+        <form id="taskForm">
+            <div class="form-group">
+                <input type="text" id="taskTitle" placeholder="Título" required>
+            </div>
+            
+            <div class="form-group">
+                <textarea id="taskDescription" placeholder="Descripción"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="taskDueDate">Fecha de vencimiento:</label>
+                <input type="date" id="taskDueDate">
+            </div>
+            
+            <div class="form-group">
+                <label for="taskCategory">Categoría:</label>
+                <select id="taskCategory">
+                    <option value="">Sin categoría</option>
+                    {% for categoria in categorias %}
+                        <option value="{{ categoria.id }}">
+                            {% if categoria.categoria_predeterminada %}
+                                {{ categoria.categoria_predeterminada.nombre }}
+                            {% else %}
+                                Personalizada
+                            {% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <button type="submit">Guardar Tarea</button>
+        </form>
+    </div>
+    
+    <div class="task-list">
+        <h2>Lista de Tareas</h2>
+        <div id="tasksContainer"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar tareas al iniciar
+            loadTasks();
+            
+            // Manejar envío de formulario
+            document.getElementById('taskForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const title = document.getElementById('taskTitle').value;
+                const description = document.getElementById('taskDescription').value;
+                const dueDate = document.getElementById('taskDueDate').value;
+                const categoryId = document.getElementById('taskCategory').value;
+                
+                fetch('/api/tareas', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        titulo: title,
+                        descripcion: description,
+                        fecha_vencimiento: dueDate,
+                        categoria_id: categoryId || null
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.id) {
+                        document.getElementById('taskForm').reset();
+                        loadTasks();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+        
+
+        function loadTasks() {
+            fetch('/api/tareas')
+                .then(response => response.json())
+                .then(tasks => {
+                    const container = document.getElementById('tasksContainer');
+                    container.innerHTML = '';
+                    
+                    if (tasks.length === 0) {
+                        container.innerHTML = '<p>No hay tareas registradas.</p>';
+                        return;
+                    }
+                    
+                    tasks.forEach(task => {
+                        const taskElement = document.createElement('div');
+                        taskElement.className = 'task';
+                        
+                        let dueDateInfo = '';
+                        if (task.fecha_vencimiento) {
+                            const dueDate = new Date(task.fecha_vencimiento);
+                            dueDateInfo = `<p class="task-due">Vence: ${dueDate.toLocaleDateString()}</p>`;
+                        }
+                        
+                        taskElement.innerHTML = `
+                            <div class="task-header">
+                                <h3>${task.titulo}</h3>
+                                <span>${task.estado}</span>
+                            </div>
+                            <p>${task.descripcion || ''}</p>
+                            ${dueDateInfo}
+                            <p class="task-category">Categoría: ${task.categoria_nombre || 'Ninguna'}</p>
+                            <div class="task-actions">
+                                ${task.puede_editar ? `<button onclick="editTask(${task.id})">Editar</button>` : ''}
+                                ${task.puede_eliminar ? `<button onclick="deleteTask(${task.id})">Eliminar</button>` : ''}
+                            </div>
+                        `;
+                        
+                        container.appendChild(taskElement);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+        
+        function deleteTask(taskId) {
+            if (confirm('¿Estás seguro de eliminar esta tarea?')) {
+                fetch(`/api/tareas/${taskId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        loadTasks();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+        
+        function loadTasks() {
+    fetch('/api/tareas')
+        .then(response => response.json())
+        .then(tasks => {
+            const container = document.getElementById('tasksContainer');
+            container.innerHTML = '';
+            
+            if (tasks.length === 0) {
+                container.innerHTML = '<p>No hay tareas registradas.</p>';
+                return;
+            }
+            
+            // Agrupar por estado
+            const estados = {
+                'NUEVA': [],
+                'EN_PROGRESO': [],
+                'PENDIENTE': [],
+                'COMPLETADA': []
+            };
+            
+            tasks.forEach(task => {
+                estados[task.estado].push(task);
+            });
+            
+            for (const [estado, tareas] of Object.entries(estados)) {
+                if (tareas.length === 0) continue;
+                
+                const section = document.createElement('div');
+                section.className = 'task-section';
+                section.innerHTML = `<h3>${estado.replace('_', ' ')}</h3>`;
+                
+                tareas.forEach(task => {
+                    const taskElement = document.createElement('div');
+                    taskElement.className = 'task';
+                    taskElement.dataset.id = task.id;
+                    
+                    let dueDateInfo = '';
+                    if (task.fecha_vencimiento) {
+                        const dueDate = new Date(task.fecha_vencimiento);
+                        const today = new Date();
+                        const isOverdue = dueDate < today && task.estado !== 'COMPLETADA';
+                        
+                        dueDateInfo = `<p class="task-due ${isOverdue ? 'overdue' : ''}">
+                            Vence: ${dueDate.toLocaleDateString()} 
+                            ${isOverdue ? ' (Vencida)' : ''}
+                        </p>`;
+                    }
+                    
+                    taskElement.innerHTML = `
+                        <div class="task-header">
+                            <h3>${task.titulo}</h3>
+                            <div>
+                                <select onchange="updateTaskStatus(${task.id}, this.value)" 
+                                    ${task.puede_editar ? '' : 'disabled'}>
+                                    <option value="NUEVA" ${task.estado === 'NUEVA' ? 'selected' : ''}>Nueva</option>
+                                    <option value="EN_PROGRESO" ${task.estado === 'EN_PROGRESO' ? 'selected' : ''}>En Progreso</option>
+                                    <option value="PENDIENTE" ${task.estado === 'PENDIENTE' ? 'selected' : ''}>Pendiente</option>
+                                    <option value="COMPLETADA" ${task.estado === 'COMPLETADA' ? 'selected' : ''}>Completada</option>
+                                </select>
+                            </div>
+                        </div>
+                        <p>${task.descripcion || ''}</p>
+                        ${dueDateInfo}
+                        <p class="task-category">Categoría: ${task.categoria_nombre || 'Ninguna'}</p>
+                        <div class="task-actions">
+                            ${task.puede_editar ? `<button onclick="editTask(${task.id})">Editar</button>` : ''}
+                            ${task.puede_eliminar ? `<button onclick="deleteTask(${task.id})">Eliminar</button>` : ''}
+                        </div>
+                    `;
+                    
+                    section.appendChild(taskElement);
+                });
+                
+                container.appendChild(section);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function updateTaskStatus(taskId, newStatus) {
+    fetch(`/api/tareas/${taskId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            estado: newStatus
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            loadTasks();
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+    function cancelEdit() {
+        const form = document.getElementById('taskForm');
+        delete form.dataset.editing;
+        form.reset();
+        form.querySelector('button[type="submit"]').textContent = 'Guardar Tarea';
+        const cancelBtn = form.querySelector('#cancelEdit');
+        if (cancelBtn) cancelBtn.remove();
+    }
+
+    // Modificar el manejador del formulario para manejar edición
+    document.getElementById('taskForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const title = document.getElementById('taskTitle').value;
+        const description = document.getElementById('taskDescription').value;
+        const dueDate = document.getElementById('taskDueDate').value;
+        const categoryId = document.getElementById('taskCategory').value;
+        
+        const isEditing = this.dataset.editing;
+        const method = isEditing ? 'PUT' : 'POST';
+        const url = isEditing ? `/api/tareas/${isEditing}` : '/api/tareas';
+        
+        fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                titulo: title,
+                descripcion: description,
+                fecha_vencimiento: dueDate,
+                categoria_id: categoryId || null
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.mensaje) {
+                cancelEdit();
+                loadTasks();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    </script>
+</body>
+</html>
