@@ -5,7 +5,7 @@ from datetime import datetime
 from config import Config
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../frontend/static')
 app.config.from_object(Config)
 app.secret_key = os.environ['FLASK_SECRET_KEY']
 
@@ -154,13 +154,15 @@ def get_tareas():
     if 'user_id' not in session:
         return jsonify({'error': 'No autorizado'}), 401
     
-    tareas_propias = Tarea.query.filter_by(usuario_id=session['user_id']).all()
+    user_id = session['user_id']
     
-    tareas_compartidas = db.session.query(Tarea).join(UsuarioTarea).filter(
-        UsuarioTarea.usuario_id == session['user_id']
+    tareas = Tarea.query.filter(
+        (Tarea.usuario_id == user_id) |
+        (Tarea.id.in_(
+            db.session.query(UsuarioTarea.tarea_id)
+            .filter(UsuarioTarea.usuario_id == user_id)
+        ))
     ).all()
-    
-    tareas = tareas_propias + tareas_compartidas
     
     return jsonify([{
         'id': t.id,
@@ -171,9 +173,9 @@ def get_tareas():
         'fecha_creacion': t.fecha_creacion.isoformat(),
         'categoria_id': t.categoria_id,
         'categoria_nombre': t.categoria.categoria_predeterminada.nombre if t.categoria and t.categoria.categoria_predeterminada else 'Personalizada',
-        'es_propia': t.usuario_id == session['user_id'],
-        'puede_editar': t.usuario_id == session['user_id'] or tiene_permiso_escritura(t.id, session['user_id']),
-        'puede_eliminar': t.usuario_id == session['user_id']
+        'es_propia': t.usuario_id == user_id,
+        'puede_editar': t.usuario_id == user_id or tiene_permiso_escritura(t.id, user_id),
+        'puede_eliminar': t.usuario_id == user_id
     } for t in tareas])
 
 @app.route('/api/tareas', methods=['POST'])
