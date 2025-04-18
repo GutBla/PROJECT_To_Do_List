@@ -372,14 +372,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-size: 14px;
+  color: #FF8C9E;
+  background-color: transparent !important;
 }
 
-.category-work { background-color: #4285F4; }
-.category-personal { background-color: #EA4335; }
-.category-study { background-color: #FBBC05; }
-.category-other { background-color: #34A853; }
+.category-item[onclick*="filterTasksByCategory(this, null)"] .category-icon {
+  color: #FF8C9E;
+}
+
+.category-work, 
+.category-personal, 
+.category-study, 
+.category-other {
+  background-color: transparent;
+  color: #FF8C9E;
+}
 
 .add-category {
   display: flex;

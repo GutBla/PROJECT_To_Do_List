@@ -30,6 +30,12 @@
     </div>
     
     <div class="categories">
+      <div class="category-item active" onclick="filterTasksByCategory(this, null)">
+        <div class="category-icon">
+          <i class="material-icons">list</i>
+        </div>
+        <span>Todas</span>
+      </div>
       {% for categoria in categorias %}
       <div class="category-item {% if loop.first %}active{% endif %}" 
            data-category-id="{{ categoria.id }}"

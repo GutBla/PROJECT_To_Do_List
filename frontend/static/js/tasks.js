@@ -85,16 +85,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function loadTasks() {
         const params = new URLSearchParams();
-        if (currentCategoryFilter) params.append('categoria_id', currentCategoryFilter);
+        if (currentCategoryFilter) {
+          params.append('categoria_id', currentCategoryFilter);
+        }
+        
         apiFetch(`/api/tareas?${params.toString()}`)
-            .then(tasks => {
-                renderKanbanBoard(tasks);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showNotification('Error al cargar las tareas', 'error');
-            });
-    }
+          .then(tasks => {
+            renderKanbanBoard(tasks);
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error al cargar las tareas', 'error');
+          });
+      }
 
     
     
@@ -266,12 +269,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function filterTasksByCategory(element, categoryId) {
         document.querySelectorAll('.category-item').forEach(item => {
-            item.classList.remove('active');
+          item.classList.remove('active');
         });
         element.classList.add('active');
         currentCategoryFilter = categoryId;
         loadTasks();
-    }
+      }
     
     function openNewCategoryModal() {
         document.getElementById('categoryModal').classList.add('active');

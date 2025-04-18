@@ -168,3 +168,12 @@ a:hover {
     font-size: 14px;
   }
 }
+
+.category-item.active {
+  background-color: rgba(255, 140, 158, 0.1);
+  border-left: 3px solid #FF8C9E;
+}
+
+.category-item:hover {
+  background-color: rgba(255, 140, 158, 0.05);
+}
