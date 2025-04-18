@@ -426,20 +426,24 @@
 
 /* Tablero Kanban */
 .kanban-board {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columnas de igual ancho */
   gap: 20px;
   padding: 20px;
-  overflow-x: auto;
   background-color: #f9f9f9;
   flex: 1;
+  height: calc(100vh - 120px); /* Ajusta según tu header */
+  overflow-y: auto;
 }
 
 .kanban-column {
-  min-width: 280px;
   background: #f5f5f5;
   border-radius: 8px;
   padding: 15px;
   height: fit-content;
+  min-height: 100%; /* Asegura que todas las columnas tengan la misma altura */
+  display: flex;
+  flex-direction: column;
 }
 
 .kanban-column-header {
@@ -448,6 +452,16 @@
   border-radius: 4px;
   font-weight: 600;
   text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.kanban-column-tasks {
+  flex: 1;
+  overflow-y: auto;
+  padding: 5px;
+  min-height: 100px;
 }
 
 .kanban-column.NUEVA .kanban-column-header {
@@ -477,6 +491,25 @@
   margin-bottom: 15px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   cursor: grab;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.empty-column {
+  text-align: center;
+  padding: 20px;
+  color: #999;
+  font-size: 14px;
+}
+
+.task-count {
+  font-weight: normal;
+  font-size: 0.9em;
+  opacity: 0.8;
 }
 
 .task-card.dragging {
@@ -500,6 +533,11 @@
   border-radius: 12px;
   font-size: 12px;
   font-weight: 500;
+}
+
+.task-card.COMPLETADA .task-card-title {
+  text-decoration: line-through;
+  opacity: 0.7;
 }
 
 .task-card.NUEVA .task-card-status {
@@ -597,15 +635,91 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 200px;
+  height: 100%;
+  min-height: 300px;
   color: var(--gray);
   text-align: center;
+  width: 100%;
+  padding: 20px;
 }
 
 .empty-tasks i {
   font-size: 48px;
   margin-bottom: 16px;
   color: rgba(0, 0, 0, 0.1);
+}
+
+/*Checkbox */
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+  margin-right: 8px;
+}
+
+.custom-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: relative;
+  height: 24px;
+  width: 24px;
+  background-color: #fff;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.custom-checkbox:hover input ~ .checkmark {
+  background-color: #f2f2f2;
+}
+
+.custom-checkbox input:checked ~ .checkmark {
+  background-color: #4CAF50;
+  border-color: #4CAF50;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 7px;
+  top: 4px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.status-text {
+  font-size: 14px;
+  color: #666;
+  margin-left: 4px;
+}
+
+.custom-checkbox input:checked ~ .checkmark {
+  background-color: #4CAF50;
+  border-color: #4CAF50;
+  animation: ripple 0.6s ease;
+}
+
+@keyframes ripple {
+  0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
 }
 
 /* Modal */
@@ -783,8 +897,8 @@
 
 /* Responsive */
 @media (max-width: 1200px) {
-  .task-list {
-    width: 350px;
+  .kanban-board {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -825,6 +939,10 @@
   
   .task-title h2 {
     font-size: 20px;
+  }
+
+  .kanban-board {
+    grid-template-columns: 1fr; 
   }
 }
 

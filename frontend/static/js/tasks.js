@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const kanbanBoard = document.getElementById('kanbanBoard');
 
   // Constantes y variables de estado
-  const statuses = ['NUEVA', 'EN_PROGRESO', 'PENDIENTE', 'COMPLETADA'];
+  const statuses = ['NUEVA', 'PENDIENTE', 'EN_PROGRESO', 'COMPLETADA'];
   let currentCategoryFilter = null;
   let currentSharedTaskId = null;
 
@@ -144,9 +144,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
       column.innerHTML = `
         <div class="kanban-column-header">
-          ${status.replace('_', ' ')} (${columnTasks.length})
+          ${status.replace('_', ' ')} <span class="task-count">(${columnTasks.length})</span>
         </div>
-        <div class="kanban-column-tasks" data-status="${status}"></div>
+        <div class="kanban-column-tasks" data-status="${status}">
+        </div>
+
       `;
 
       kanbanBoard.appendChild(column);
@@ -184,10 +186,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     taskCard.innerHTML = `
-      <div class="task-card-header">
+    <div class="task-card-header">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <label class="custom-checkbox">
+          <input type="checkbox" 
+                ${task.estado === 'COMPLETADA' ? 'checked' : ''}
+                onchange="toggleTaskCompletion(${task.id}, this.checked)">
+          <span class="checkmark"></span>
+        </label>
         <h3 class="task-card-title">${escapeHtml(task.titulo)}</h3>
-        <span class="task-card-status">${task.estado.replace('_', ' ')}</span>
       </div>
+      <span class="task-card-status">${task.estado.replace('_', ' ')}</span>
+    </div>
       ${task.descripcion ? `<p style="font-size:14px;margin:5px 0;">${escapeHtml(task.descripcion)}</p>` : ''}
       ${dueDateInfo}
       ${task.categoria_nombre ? `
@@ -206,6 +216,8 @@ document.addEventListener('DOMContentLoaded', function () {
             <option value="COMPLETADA" ${task.estado === 'COMPLETADA' ? 'selected' : ''}>Completada</option>
           </select>
         </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+     </div>
         <div class="task-card-buttons">
           ${task.puede_editar ? `
             <button class="task-card-button" onclick="event.stopPropagation(); editTask(${task.id})">
@@ -527,6 +539,10 @@ document.addEventListener('DOMContentLoaded', function () {
   window.openNewCategoryModal = openNewCategoryModal;
   window.closeCategoryModal = closeCategoryModal;
   window.createNewCategory = createNewCategory;
+  window.toggleTaskCompletion = function(taskId, completed) {
+    const newStatus = completed ? 'COMPLETADA' : 'NUEVA';
+    updateTaskStatus(taskId, newStatus);
+  };
   window.editTask = function (taskId) {
     openTaskModal(taskId);
   };

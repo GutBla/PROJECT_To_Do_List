@@ -258,6 +258,11 @@ def get_tarea(tarea_id):
     
     return jsonify({
         'id': tarea.id,
+        'titulo': tarea.titulo,
+        'descripcion': tarea.descripcion,
+        'estado': tarea.estado,
+        'fecha_vencimiento': tarea.fecha_vencimiento.isoformat() if tarea.fecha_vencimiento else None,
+        'categoria_id': tarea.categoria_id,
         'propietario': {
             'usuario_id': owner.id,
             'email': owner.email,

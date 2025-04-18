@@ -37,9 +37,9 @@
         <span>Todas</span>
       </div>
       {% for categoria in categorias %}
-      <div class="category-item {% if loop.first %}active{% endif %}" 
-           data-category-id="{{ categoria.id }}"
-           onclick="filterTasksByCategory(this, '{{ categoria.id }}')">
+      <div class="category-item"
+     data-category-id="{{ categoria.id }}"
+     onclick="filterTasksByCategory(this, '{{ categoria.id }}')">
         <div class="category-icon {% if categoria.categoria_predeterminada %}category-{{ categoria.categoria_predeterminada.nombre|lower }}{% else %}category-other{% endif %}">
           <i class="material-icons">
             {% if categoria.categoria_predeterminada %}
