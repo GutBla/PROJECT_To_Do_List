@@ -5,12 +5,17 @@ from datetime import datetime
 from config import Config
 import os
 
+# Configuración inicial de la aplicación Flask
+# ----------------------------------------------
 app = Flask(__name__, static_folder='../frontend/static')
 app.config.from_object(Config)
 app.secret_key = os.environ['FLASK_SECRET_KEY']
 
+# Inicialización de la base de datos con SQLAlchemy
+# -------------------------------------------------
 db = SQLAlchemy(app)
 
+# Modelos de la base de datos ----------------------
 class Usuario(db.Model):
     __tablename__ = 'Usuario'
     id = db.Column(db.Integer, primary_key=True)
@@ -73,6 +78,7 @@ class UsuarioTarea(db.Model):
     
     usuario = db.relationship('Usuario', backref='tareas_compartidas')
 
+# Funciones de ayuda -------------------------------------
 def tiene_permiso_escritura(tarea_id, usuario_id):
     if Tarea.query.get(tarea_id).usuario_id == usuario_id:
         return True
@@ -87,6 +93,8 @@ def tiene_permiso_escritura(tarea_id, usuario_id):
 def es_propietario(tarea_id, usuario_id):
     return Tarea.query.get(tarea_id).usuario_id == usuario_id
 
+
+# Rutas de autenticación ----------------------------------
 @app.route('/')
 def home():
     if 'user_id' in session:
@@ -140,6 +148,7 @@ def logout():
     session.clear()
     return redirect('/login')
 
+# Rutas principales ---------------------------
 @app.route('/tareas')
 def tareas():
     if 'user_id' not in session:
@@ -152,6 +161,8 @@ def tareas():
                          usuario=usuario,
                          categorias=categorias)
 
+
+# API Endpoints -------------------------------
 @app.route('/api/tareas', methods=['GET'])
 def get_tareas():
     if 'user_id' not in session:
@@ -235,17 +246,14 @@ def get_tarea(tarea_id):
     if not tarea:
         return jsonify({'error': 'Tarea no encontrada'}), 404
     
-    # Verificar permisos
     if tarea.usuario_id != session['user_id'] and not db.session.query(UsuarioTarea).filter_by(
         usuario_id=session['user_id'],
         tarea_id=tarea_id
     ).first():
         return jsonify({'error': 'No tienes acceso a esta tarea'}), 403
     
-    # Obtener propietario
     owner = db.session.get(Usuario, tarea.usuario_id)
     
-    # Obtener usuarios compartidos con información del usuario
     shared_users = db.session.query(UsuarioTarea).filter_by(tarea_id=tarea_id).join(Usuario).all()
     
     return jsonify({
@@ -407,12 +415,10 @@ def compartir_tarea(tarea_id):
     usuario_email = data['email']
     permisos = data.get('permisos', 'LECTURA')
     
-    # Verificar que el usuario actual es el propietario
     tarea = db.session.get(Tarea, tarea_id)
     if not tarea or tarea.usuario_id != session['user_id']:
         return jsonify({'error': 'No tienes permisos para compartir esta tarea'}), 403
     
-    # Buscar usuario por email
     usuario = db.session.query(Usuario).filter_by(email=usuario_email).first()
     if not usuario:
         return jsonify({'error': 'Usuario no encontrado'}), 404
@@ -420,7 +426,6 @@ def compartir_tarea(tarea_id):
     if usuario.id == session['user_id']:
         return jsonify({'error': 'No puedes compartir la tarea contigo mismo'}), 400
     
-    # Verificar si ya está compartida
     existente = db.session.query(UsuarioTarea).filter_by(
         usuario_id=usuario.id,
         tarea_id=tarea_id
@@ -429,7 +434,6 @@ def compartir_tarea(tarea_id):
     if existente:
         return jsonify({'error': 'La tarea ya está compartida con este usuario'}), 400
     
-    # Compartir la tarea
     compartir = UsuarioTarea(
         usuario_id=usuario.id,
         tarea_id=tarea_id,
@@ -521,10 +525,10 @@ def initialize_default_categories():
         print(f"Error inicializando categorías: {str(e)}")
         db.session.rollback()
 
-# En el contexto de la aplicación
 with app.app_context():
     db.create_all()
     initialize_default_categories()
 
+# Inicialización de la base de datos ----------------------
 if __name__ == '__main__':
     app.run(debug=True)

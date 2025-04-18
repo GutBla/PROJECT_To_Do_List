@@ -10,6 +10,7 @@
   --success: #2ecc71;
 }
 
+/* Estilos globales */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -32,12 +33,14 @@ a:hover {
   color: var(--primary);
 }
 
+/* Diseño */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
+/* Botones */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -71,6 +74,7 @@ a:hover {
   background-color: rgba(10, 151, 176, 0.1);
 }
 
+/* Notificaciones */
 .notification {
   position: fixed;
   top: 20px;
@@ -106,16 +110,7 @@ a:hover {
   background-color: var(--secondary);
 }
 
-.error-message {
-  color: var(--error);
-  font-size: 0.8em;
-  margin-top: 5px;
-}
-
-.error-field {
-  border-color: var(--error) !important;
-}
-
+/* Formularios */
 .form-group {
   margin-bottom: 20px;
 }
@@ -142,6 +137,17 @@ a:hover {
   box-shadow: 0 0 0 2px rgba(240, 90, 126, 0.2);
 }
 
+.error-message {
+  color: var(--error);
+  font-size: 0.8em;
+  margin-top: 5px;
+}
+
+.error-field {
+  border-color: var(--error) !important;
+}
+
+/* Encabezado */
 .app-header {
   background: linear-gradient(135deg, var(--primary), var(--primary-light));
   color: white;
@@ -158,17 +164,7 @@ a:hover {
   gap: 12px;
 }
 
-@media (max-width: 768px) {
-  .app-header h1 {
-    font-size: 24px;
-  }
-  
-  .btn {
-    padding: 10px 16px;
-    font-size: 14px;
-  }
-}
-
+/* Categorías */
 .category-item.active {
   background-color: rgba(255, 140, 158, 0.1);
   border-left: 3px solid #FF8C9E;
@@ -176,4 +172,16 @@ a:hover {
 
 .category-item:hover {
   background-color: rgba(255, 140, 158, 0.05);
+}
+
+/* Consultas de medios */
+@media (max-width: 768px) {
+  .app-header h1 {
+    font-size: 24px;
+  }
+
+  .btn {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
 }

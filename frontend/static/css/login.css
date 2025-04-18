@@ -1,3 +1,4 @@
+/* Contenedor de Inicio de Sesión */
 .login-container {
   max-width: 480px;
   margin: 0 auto;
@@ -7,6 +8,7 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
+/* Título de Inicio de Sesión */
 .login-title {
   font-size: 24px;
   margin-bottom: 30px;
@@ -14,12 +16,14 @@
   color: var(--primary);
 }
 
+/* Botón del Formulario de Inicio de Sesión */
 .login-form .btn {
   width: 100%;
   justify-content: center;
   margin-top: 10px;
 }
 
+/* Pie de Página de Inicio de Sesión */
 .login-footer {
   text-align: center;
   margin-top: 24px;
@@ -35,6 +39,7 @@
   text-decoration: underline;
 }
 
+/* Animación de Inicio de Sesión */
 .login-container {
   animation: fadeInUp 0.5s ease;
 }
@@ -50,6 +55,7 @@
   }
 }
 
+/* Consultas de Medios - Inicio de Sesión */
 @media (max-width: 576px) {
   .login-container {
     padding: 30px 20px;
