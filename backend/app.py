@@ -1,7 +1,9 @@
 from flask import Flask, jsonify, request, session, redirect, url_for, render_template
 from datetime import datetime
 from config import Config
+from forms import LoginForm, RegistrationForm
 from models import db, Tarea, UsuarioTarea, Usuario, CategoriaPredeterminada, Categoria
+from flask_wtf import CSRFProtect
 
 # Configuración inicial de la aplicación Flask
 # ----------------------------------------------
@@ -11,7 +13,7 @@ app.config.from_object(Config)
 # Inicialización de SQLAlchemy con la app
 # ------------------------------------------------
 db.init_app(app)
-
+csrf = CSRFProtect(app)
 # Inicialización de la base de datos
 # ------------------------------------------------
 with app.app_context():
@@ -42,28 +44,30 @@ def home():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
+    form = LoginForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
         user = Usuario.query.filter_by(email=email).first()
         
         if user and user.check_password(password):
             session['user_id'] = user.id
             session['user_name'] = user.nombre_completo
             return redirect('/tareas')
-        return render_template('login.html', error="Credenciales inválidas")
+        return render_template('login.html', error="Credenciales inválidas", form=form)
     
-    return render_template('login.html')
+    return render_template('login.html', form=form)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        nombre = request.form['nombre']
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+        nombre = form.nombre.data
         
         if Usuario.query.filter_by(email=email).first():
-            return render_template('register.html', error="El email ya está registrado")
+            return render_template('register.html', error="El email ya está registrado", form=form)
             
         new_user = Usuario(email=email, nombre_completo=nombre)
         new_user.set_password(password)
@@ -80,7 +84,7 @@ def register():
         db.session.commit()
         return redirect('/login')
     
-    return render_template('register.html')
+    return render_template('register.html', form=form)
 
 @app.route('/logout')
 def logout():
