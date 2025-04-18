@@ -1,13 +1,15 @@
 import os
 from dotenv import load_dotenv
+# import secrets
 
 load_dotenv()
 
-DB = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_HOST = os.getenv("DB_HOST")
-DB_NAME = os.getenv("DB_NAME")
-
 class Config:
-    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
+    MYSQL_HOST = os.getenv('MYSQL_HOST')
+    MYSQL_USER = os.getenv('MYSQL_USER')
+    MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
+    MYSQL_DB = os.getenv('MYSQL_DB')
+    
+    SECRET_KEY = 'secret_key' #secrets.token_hex(16)
+    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}/{MYSQL_DB}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False

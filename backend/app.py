@@ -1,82 +1,21 @@
 from flask import Flask, jsonify, request, session, redirect, url_for, render_template
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from config import Config
-import os
+from models import db, Tarea, UsuarioTarea, Usuario, CategoriaPredeterminada, Categoria
 
 # Configuración inicial de la aplicación Flask
 # ----------------------------------------------
 app = Flask(__name__, static_folder='../frontend/static')
 app.config.from_object(Config)
-app.secret_key = os.environ['FLASK_SECRET_KEY']
 
-# Inicialización de la base de datos con SQLAlchemy
-# -------------------------------------------------
-db = SQLAlchemy(app)
+# Inicialización de SQLAlchemy con la app
+# ------------------------------------------------
+db.init_app(app)
 
-# Modelos de la base de datos ----------------------
-class Usuario(db.Model):
-    __tablename__ = 'Usuario'
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
-    nombre_completo = db.Column(db.String(255), nullable=False)
-    fecha_creacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
-    fecha_actualizacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
-    
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-    
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-class CategoriaPredeterminada(db.Model):
-    __tablename__ = 'CategoriaPredeterminada'
-    id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(255), unique=True, nullable=False)
-    descripcion = db.Column(db.Text)
-
-class Categoria(db.Model):
-    __tablename__ = 'Categoria'
-    id = db.Column(db.Integer, primary_key=True)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('Usuario.id'), nullable=False)
-    categoria_predeterminada_id = db.Column(db.Integer, db.ForeignKey('CategoriaPredeterminada.id'))
-    es_predeterminada = db.Column(db.Boolean, default=False)
-    fecha_creacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
-    fecha_actualizacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
-    
-    usuario = db.relationship('Usuario', backref='categorias')
-    categoria_predeterminada = db.relationship('CategoriaPredeterminada')
-
-class Tarea(db.Model):
-    __tablename__ = 'Tarea'
-    id = db.Column(db.Integer, primary_key=True)
-    categoria_id = db.Column(db.Integer, db.ForeignKey('Categoria.id'))
-    usuario_id = db.Column(db.Integer, db.ForeignKey('Usuario.id'), nullable=False)
-    titulo = db.Column(db.String(255), nullable=False)
-    descripcion = db.Column(db.Text)
-    estado = db.Column(db.Enum('NUEVA', 'EN_PROGRESO', 'COMPLETADA', 'PENDIENTE'), default='NUEVA')
-    fecha_vencimiento = db.Column(db.Date)
-    fecha_creacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
-    fecha_actualizacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
-    fecha_completado = db.Column(db.TIMESTAMP)
-    
-    categoria = db.relationship('Categoria', lazy='joined')
-    usuario = db.relationship('Usuario', backref='tareas')
-    usuarios_compartidos = db.relationship('UsuarioTarea', backref='tarea', cascade='all, delete-orphan')
-    @property
-    def usuarios_compartidos(self):
-        return UsuarioTarea.query.filter_by(tarea_id=self.id).join(Usuario).all()
-
-class UsuarioTarea(db.Model):
-    __tablename__ = 'Usuario_Tarea'
-    usuario_id = db.Column(db.Integer, db.ForeignKey('Usuario.id'), primary_key=True)
-    tarea_id = db.Column(db.Integer, db.ForeignKey('Tarea.id'), primary_key=True)
-    fecha_asignacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
-    permisos = db.Column(db.Enum('LECTURA', 'ESCRITURA', 'PROPIETARIO'), default='LECTURA')
-    
-    usuario = db.relationship('Usuario', backref='tareas_compartidas')
+# Inicialización de la base de datos
+# ------------------------------------------------
+with app.app_context():
+    db.create_all()
 
 # Funciones de ayuda -------------------------------------
 def validate_write_permission(tarea_id, usuario_id):
@@ -157,9 +96,7 @@ def tareas():
     usuario = Usuario.query.get(session['user_id'])
     categorias = Categoria.query.filter_by(usuario_id=usuario.id).all()
     
-    return render_template('tareas.html', 
-                         usuario=usuario,
-                         categorias=categorias)
+    return render_template('tareas.html', usuario=usuario, categorias=categorias)
 
 
 # API Endpoints -------------------------------
@@ -347,9 +284,20 @@ def delete_tarea(tarea_id):
     if tarea.usuario_id != session['user_id']:
         return jsonify({'error': 'Solo el propietario puede eliminar la tarea'}), 403
     
-    db.session.delete(tarea)
-    db.session.commit()
-    return jsonify({'mensaje': 'Tarea eliminada exitosamente'})
+    try:
+        #Se elimina las relaciones de usuario_tarea asociadas a la tarea
+        # ---------------------
+        relaciones = UsuarioTarea.query.filter_by(tarea_id=tarea_id).all()
+        for relacion in relaciones:
+            db.session.delete(relacion)
+    
+        db.session.delete(tarea)
+        db.session.commit()
+        
+        return jsonify({'mensaje': 'Tarea eliminada exitosamente'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Error al eliminar la tarea'}), 500
 
 @app.route('/api/categorias', methods=['GET'])
 def get_categorias():
@@ -531,9 +479,8 @@ def initialize_default_categories():
         db.session.rollback()
 
 with app.app_context():
-    db.create_all()
+    # db.create_all()
     initialize_default_categories()
 
-# Inicialización de la base de datos ----------------------
 if __name__ == '__main__':
     app.run(debug=True)
