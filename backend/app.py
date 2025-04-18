@@ -79,7 +79,7 @@ class UsuarioTarea(db.Model):
     usuario = db.relationship('Usuario', backref='tareas_compartidas')
 
 # Funciones de ayuda -------------------------------------
-def tiene_permiso_escritura(tarea_id, usuario_id):
+def validate_write_permission(tarea_id, usuario_id):
     if Tarea.query.get(tarea_id).usuario_id == usuario_id:
         return True
     
@@ -90,7 +90,7 @@ def tiene_permiso_escritura(tarea_id, usuario_id):
     
     return permiso and permiso.permisos in ('ESCRITURA', 'PROPIETARIO')
 
-def es_propietario(tarea_id, usuario_id):
+def validate_task_owner(tarea_id, usuario_id):
     return Tarea.query.get(tarea_id).usuario_id == usuario_id
 
 
@@ -202,7 +202,7 @@ def get_tareas():
             )
         ),
         'es_propia': t.usuario_id == user_id,
-        'puede_editar': t.usuario_id == user_id or tiene_permiso_escritura(t.id, user_id),
+        'puede_editar': t.usuario_id == user_id or validate_write_permission(t.id, user_id),
         'puede_eliminar': t.usuario_id == user_id
     } for t in tareas])
 
@@ -283,7 +283,7 @@ def update_tarea(tarea_id):
     
     tarea = Tarea.query.get_or_404(tarea_id)
     
-    if not tiene_permiso_escritura(tarea_id, session['user_id']):
+    if not validate_write_permission(tarea_id, session['user_id']):
         return jsonify({'error': 'No tienes permisos para editar esta tarea'}), 403
     
     data = request.get_json()
@@ -457,7 +457,7 @@ def gestionar_permisos(tarea_id):
     if 'user_id' not in session:
         return jsonify({'error': 'No autorizado'}), 401
     
-    if not es_propietario(tarea_id, session['user_id']):
+    if not validate_task_owner(tarea_id, session['user_id']):
         return jsonify({'error': 'Solo el propietario puede gestionar permisos'}), 403
     
     data = request.get_json()
