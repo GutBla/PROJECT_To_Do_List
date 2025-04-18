@@ -83,12 +83,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function loadTasks() {
-        let url = '/api/tareas';
-        if (currentCategoryFilter) {
-            url += `?categoria_id=${currentCategoryFilter}`;
-        }
-        
-        apiFetch(url)
+        const params = new URLSearchParams();
+        if (currentCategoryFilter) params.append('categoria_id', currentCategoryFilter);
+        apiFetch(`/api/tareas?${params.toString()}`)
             .then(tasks => {
                 renderKanbanBoard(tasks);
             })
@@ -97,6 +94,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 showNotification('Error al cargar las tareas', 'error');
             });
     }
+
+    
     
     function renderKanbanBoard(tasks) {
         kanbanBoard.innerHTML = '';

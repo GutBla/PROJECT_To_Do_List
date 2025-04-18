@@ -57,7 +57,7 @@ class Tarea(db.Model):
     fecha_actualizacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     fecha_completado = db.Column(db.TIMESTAMP)
     
-    categoria = db.relationship('Categoria')
+    categoria = db.relationship('Categoria', lazy='joined')
     usuario = db.relationship('Usuario', backref='tareas')
     usuarios_compartidos = db.relationship('UsuarioTarea', backref='tarea', cascade='all, delete-orphan')
 
@@ -156,13 +156,19 @@ def get_tareas():
     
     user_id = session['user_id']
     
-    tareas = Tarea.query.filter(
+    query = Tarea.query.filter(
         (Tarea.usuario_id == user_id) |
         (Tarea.id.in_(
             db.session.query(UsuarioTarea.tarea_id)
             .filter(UsuarioTarea.usuario_id == user_id)
         ))
-    ).all()
+    )
+
+    categoria_id = request.args.get('categoria_id', type=int)
+    if categoria_id:
+        query = query.filter(Tarea.categoria_id == categoria_id)
+    
+    tareas = query.all()
     
     return jsonify([{
         'id': t.id,
@@ -172,7 +178,15 @@ def get_tareas():
         'fecha_vencimiento': t.fecha_vencimiento.isoformat() if t.fecha_vencimiento else None,
         'fecha_creacion': t.fecha_creacion.isoformat(),
         'categoria_id': t.categoria_id,
-        'categoria_nombre': t.categoria.categoria_predeterminada.nombre if t.categoria and t.categoria.categoria_predeterminada else 'Personalizada',
+        'categoria_nombre': (
+            t.categoria.categoria_predeterminada.nombre 
+            if t.categoria and t.categoria.categoria_predeterminada 
+            else (
+                'Personalizada' 
+                if t.categoria 
+                else 'Sin categoría'
+            )
+        ),
         'es_propia': t.usuario_id == user_id,
         'puede_editar': t.usuario_id == user_id or tiene_permiso_escritura(t.id, user_id),
         'puede_eliminar': t.usuario_id == user_id
@@ -316,6 +330,50 @@ def get_categorias():
         'descripcion': c.categoria_predeterminada.descripcion if c.categoria_predeterminada else None
     } for c in categorias])
 
+@app.route('/api/categorias', methods=['POST'])
+def create_categoria():
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    
+    data = request.get_json()
+    
+    if not data or not data.get('nombre'):
+        return jsonify({'error': 'El nombre es requerido'}), 400
+    
+    if len(data['nombre']) > 255:
+        return jsonify({'error': 'El nombre no puede exceder los 255 caracteres'}), 400
+    
+    try:
+        nueva_categoria = Categoria(
+            usuario_id=session['user_id'],
+            es_predeterminada=False
+        )
+        
+        cat_pred = CategoriaPredeterminada.query.filter_by(nombre=data['nombre']).first()
+        if cat_pred:
+            nueva_categoria.categoria_predeterminada_id = cat_pred.id
+        else:
+            nueva_predeterminada = CategoriaPredeterminada(
+                nombre=data['nombre'],
+                descripcion=data.get('descripcion')
+            )
+            db.session.add(nueva_predeterminada)
+            db.session.flush() 
+            nueva_categoria.categoria_predeterminada_id = nueva_predeterminada.id
+        
+        db.session.add(nueva_categoria)
+        db.session.commit()
+        
+        return jsonify({
+            'id': nueva_categoria.id,
+            'nombre': data['nombre'],
+            'mensaje': 'Categoría creada exitosamente'
+        }), 201
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Error al crear la categoría', 'detalle': str(e)}), 500
+
 @app.route('/api/tareas/<int:tarea_id>/compartir', methods=['POST'])
 def compartir_tarea(tarea_id):
     if 'user_id' not in session:
@@ -369,6 +427,34 @@ with app.app_context():
             ))
         db.session.commit()
         print("Categorías predeterminadas creadas exitosamente")
+
+def initialize_default_categories():
+    try:
+        default_categories = [
+            ('Trabajo', 'Tareas relacionadas con el trabajo'),
+            ('Personal', 'Tareas personales'),
+            ('Estudio', 'Tareas de estudio'),
+            ('Hogar', 'Tareas del hogar')
+        ]
+        
+        for nombre, desc in default_categories:
+            if not CategoriaPredeterminada.query.filter_by(nombre=nombre).first():
+                db.session.add(CategoriaPredeterminada(
+                    nombre=nombre,
+                    descripcion=desc
+                ))
+        
+        db.session.commit()
+        print("Categorías predeterminadas inicializadas correctamente")
+        
+    except Exception as e:
+        print(f"Error inicializando categorías: {str(e)}")
+        db.session.rollback()
+
+# En el contexto de la aplicación
+with app.app_context():
+    db.create_all()
+    initialize_default_categories()
 
 if __name__ == '__main__':
     app.run(debug=True)
