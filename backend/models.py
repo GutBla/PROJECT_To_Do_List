@@ -9,7 +9,7 @@ db = SQLAlchemy()
 class Usuario(db.Model):
     __tablename__ = 'Usuario'
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=False)
+    email = db.Column(db.String(255), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
     nombre_completo = db.Column(db.String(255), nullable=False)
     fecha_creacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
@@ -30,7 +30,7 @@ class CategoriaPredeterminada(db.Model):
 class Categoria(db.Model):
     __tablename__ = 'Categoria'
     id = db.Column(db.Integer, primary_key=True)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('Usuario.id'), nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('Usuario.id'), nullable=False, index=True)
     categoria_predeterminada_id = db.Column(db.Integer, db.ForeignKey('CategoriaPredeterminada.id'))
     es_predeterminada = db.Column(db.Boolean, default=False)
     fecha_creacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
@@ -43,10 +43,10 @@ class Tarea(db.Model):
     __tablename__ = 'Tarea'
     id = db.Column(db.Integer, primary_key=True)
     categoria_id = db.Column(db.Integer, db.ForeignKey('Categoria.id'))
-    usuario_id = db.Column(db.Integer, db.ForeignKey('Usuario.id'), nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('Usuario.id'), nullable=False, index=True)
     titulo = db.Column(db.String(255), nullable=False)
     descripcion = db.Column(db.Text)
-    estado = db.Column(db.Enum('NUEVA', 'EN_PROGRESO', 'COMPLETADA', 'PENDIENTE'), default='NUEVA')
+    estado = db.Column(db.Enum('NUEVA', 'EN_PROGRESO', 'COMPLETADA', 'PENDIENTE'), default='NUEVA', index=True)
     fecha_vencimiento = db.Column(db.Date)
     fecha_creacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     fecha_actualizacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
