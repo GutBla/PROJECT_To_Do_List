@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, session, redirect, url_for, render_template
+from flask import Flask, jsonify, request, session, redirect, render_template
 from datetime import datetime
 from config import Config
 from forms import LoginForm, RegistrationForm
@@ -13,11 +13,10 @@ app.config.from_object(Config)
 # Inicialización de SQLAlchemy con la app
 # ------------------------------------------------
 db.init_app(app)
-csrf = CSRFProtect(app)
-# Inicialización de la base de datos
+
+# Inicialización de CSRF con la app
 # ------------------------------------------------
-with app.app_context():
-    db.create_all()
+csrf = CSRFProtect(app)
 
 # Funciones de ayuda -------------------------------------
 def validate_write_permission(tarea_id, usuario_id):
@@ -34,6 +33,36 @@ def validate_write_permission(tarea_id, usuario_id):
 def validate_task_owner(tarea_id, usuario_id):
     return Tarea.query.get(tarea_id).usuario_id == usuario_id
 
+# Inicialización de categorías predeterminadas
+# ------------------------------------------------
+def initialize_default_categories():
+    try:
+        default_categories = [
+            ('Trabajo', 'Tareas relacionadas con el trabajo'),
+            ('Personal', 'Tareas personales'),
+            ('Estudio', 'Tareas de estudio'),
+            ('Hogar', 'Tareas del hogar')
+        ]
+        
+        for nombre, desc in default_categories:
+            if not CategoriaPredeterminada.query.filter_by(nombre=nombre).first():
+                db.session.add(CategoriaPredeterminada(
+                    nombre=nombre,
+                    descripcion=desc
+                ))
+        
+        db.session.commit()
+        print("Categorías predeterminadas inicializadas correctamente")
+        
+    except Exception as e:
+        print(f"Error inicializando categorías: {str(e)}")
+        db.session.rollback()
+
+# Inicialización de la base de datos
+# ------------------------------------------------
+with app.app_context():
+    db.create_all()
+    initialize_default_categories()
 
 # Rutas de autenticación ----------------------------------
 @app.route('/')
@@ -458,33 +487,6 @@ with app.app_context():
             ))
         db.session.commit()
         print("Categorías predeterminadas creadas exitosamente")
-
-def initialize_default_categories():
-    try:
-        default_categories = [
-            ('Trabajo', 'Tareas relacionadas con el trabajo'),
-            ('Personal', 'Tareas personales'),
-            ('Estudio', 'Tareas de estudio'),
-            ('Hogar', 'Tareas del hogar')
-        ]
-        
-        for nombre, desc in default_categories:
-            if not CategoriaPredeterminada.query.filter_by(nombre=nombre).first():
-                db.session.add(CategoriaPredeterminada(
-                    nombre=nombre,
-                    descripcion=desc
-                ))
-        
-        db.session.commit()
-        print("Categorías predeterminadas inicializadas correctamente")
-        
-    except Exception as e:
-        print(f"Error inicializando categorías: {str(e)}")
-        db.session.rollback()
-
-with app.app_context():
-    # db.create_all()
-    initialize_default_categories()
 
 if __name__ == '__main__':
     app.run(debug=True)
