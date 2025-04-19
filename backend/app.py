@@ -3,7 +3,6 @@ from datetime import datetime
 from config import Config
 from forms import LoginForm, RegistrationForm
 from models import db, Tarea, UsuarioTarea, Usuario, CategoriaPredeterminada, Categoria
-from flask_wtf import CSRFProtect
 
 # Configuración inicial de la aplicación Flask
 # ----------------------------------------------
@@ -13,10 +12,6 @@ app.config.from_object(Config)
 # Inicialización de SQLAlchemy con la app
 # ------------------------------------------------
 db.init_app(app)
-
-# Inicialización de CSRF con la app
-# ------------------------------------------------
-csrf = CSRFProtect(app)
 
 # Funciones de ayuda -------------------------------------
 def validate_write_permission(tarea_id, usuario_id):
