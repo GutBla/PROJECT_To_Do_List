@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, session, redirect, render_template
 from datetime import datetime
+from flask_wtf import CSRFProtect
 from config import Config
 from forms import LoginForm, RegistrationForm
 from models import db, Tarea, UsuarioTarea, Usuario, CategoriaPredeterminada, Categoria
@@ -9,9 +10,14 @@ from models import db, Tarea, UsuarioTarea, Usuario, CategoriaPredeterminada, Ca
 app = Flask(__name__, static_folder='../frontend/static')
 app.config.from_object(Config)
 
+# Inicialización de CSRFProtect para proteger contra ataques CSRF
+# ------------------------------------------------
+csrf = CSRFProtect(app)
+
 # Inicialización de SQLAlchemy con la app
 # ------------------------------------------------
 db.init_app(app)
+
 
 # Funciones de ayuda -------------------------------------
 def validate_write_permission(tarea_id, usuario_id):
@@ -128,6 +134,7 @@ def tareas():
 
 
 # API Endpoints -------------------------------
+@csrf.exempt
 @app.route('/api/tareas', methods=['GET'])
 def get_tareas():
     if 'user_id' not in session:
@@ -202,6 +209,7 @@ def create_tarea():
         'mensaje': 'Tarea creada exitosamente'
     }), 201
 
+@csrf.exempt
 @app.route('/api/tareas/<int:tarea_id>', methods=['GET'])
 def get_tarea(tarea_id):
     if 'user_id' not in session:
@@ -327,6 +335,7 @@ def delete_tarea(tarea_id):
         db.session.rollback()
         return jsonify({'error': 'Error al eliminar la tarea'}), 500
 
+@csrf.exempt
 @app.route('/api/categorias', methods=['GET'])
 def get_categorias():
     if 'user_id' not in session:
