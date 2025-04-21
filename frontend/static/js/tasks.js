@@ -468,27 +468,59 @@ document.addEventListener("DOMContentLoaded", function () {
      */
     function handleShareSubmit(event) {
         event.preventDefault();
+
         const email = document.getElementById("shareEmail").value;
         const permissions = document.getElementById("sharePermissions").value;
+        const taskId = document.getElementById("shareTaskId").value;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");    
 
-        apiFetch(`/api/tareas/${currentSharedTaskId}/compartir`, {
-            method: "POST",
-            body: { email, permisos: permissions },
+        if (!email) {
+            document.getElementById("shareError").textContent = "El email es requerido";
+            return;
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            document.getElementById("shareError").textContent = "Ingrese un email válido";
+            return;
+        }
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        };
+
+        const shareData = {
+            email: email,
+            permisos: permissions
+        };
+
+        const shareBtn = event.target.querySelector('button[type="submit"]');
+        const originalText = shareBtn.innerHTML;
+        shareBtn.innerHTML = '<i class="material-icons">hourglass_empty</i>';
+        shareBtn.disabled = true;
+
+        apiFetch(`/api/tareas/${taskId}/compartir`, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(shareData)
         })
-            .then(() => {
-                showNotification("Tarea compartida exitosamente", "success");
-                closeShareModal();
-            })
-            .catch((error) => {
-                const errorElement = document.getElementById("shareError");
-                if (error.details && error.details.error) {
-                    errorElement.textContent = error.details.error;
-                } else {
-                    errorElement.textContent = "Error al compartir la tarea";
-                }
-            });
+        .then(response => {
+            showNotification("Tarea compartida exitosamente", "success");
+            closeShareModal();
+            loadSharedUsers(taskId); // Recargar la lista de usuarios compartidos
+        })
+        .catch(error => {
+            console.error("Error al compartir tarea:", error);
+            const errorMsg = error.details?.error || "Error al compartir la tarea";
+            document.getElementById("shareError").textContent = errorMsg;
+        })
+        .finally(() => {
+            shareBtn.innerHTML = originalText;
+            shareBtn.disabled = false;
+        });
     }
-
+    
     /**
      * Carga los usuarios con acceso a una tarea
      * @param {number} taskId - ID de la tarea
@@ -504,71 +536,52 @@ document.addEventListener("DOMContentLoaded", function () {
                 const ownerItem = document.createElement("div");
                 ownerItem.className = "shared-user-item owner";
                 ownerItem.innerHTML = `
-          <div class="shared-user-info">
-            <span class="shared-user-email">${escapeHtml(
-                task.propietario.email
-            )}</span>
-            <span class="shared-user-permissions">(Propietario)</span>
-          </div>
-          <div class="shared-user-actions">
-            <span class="owner-badge">Dueño</span>
-          </div>
-        `;
+                <div class="shared-user-info">
+                    <span class="shared-user-email">${escapeHtml(task.propietario.email)}</span>
+                    <span class="shared-user-permissions">(Propietario)</span>
+                </div>
+                <div class="shared-user-actions">
+                    <span class="owner-badge">Dueño</span>
+                </div>
+            `;
                 container.appendChild(ownerItem);
 
-                if (
-                    task.usuarios_compartidos &&
-                    task.usuarios_compartidos.length > 0
-                ) {
+                if (task.usuarios_compartidos && task.usuarios_compartidos.length > 0) {
                     task.usuarios_compartidos.forEach((user) => {
                         const userItem = document.createElement("div");
                         userItem.className = "shared-user-item";
                         userItem.innerHTML = `
-              <div class="shared-user-info">
-                <span class="shared-user-email">${escapeHtml(
-                    user.usuario.email
-                )}</span>
-                <span class="shared-user-permissions">(${getPermissionText(
-                    user.permisos
-                )})</span>
-              </div>
-              <div class="shared-user-actions">
-                <select class="permission-select" 
-                    onchange="updateUserPermission(${taskId}, ${
-                            user.usuario_id
-                        }, this.value)">
-                  <option value="LECTURA" ${
-                      user.permisos === "LECTURA" ? "selected" : ""
-                  }>Lectura</option>
-                  <option value="ESCRITURA" ${
-                      user.permisos === "ESCRITURA" ? "selected" : ""
-                  }>Escritura</option>
-                </select>
-                <button onclick="removeUserPermission(${taskId}, ${
-                            user.usuario_id
-                        })">
-                  <i class="material-icons">delete</i>
-                </button>
-              </div>
-            `;
+                            <div class="shared-user-info">
+                                <span class="shared-user-email">${escapeHtml(user.usuario.email)}</span>
+                                <span class="shared-user-permissions">(${getPermissionText(user.permisos)})</span>
+                            </div>
+                            <div class="shared-user-actions">
+                                <select class="permission-select" 
+                                    onchange="updateUserPermission(${taskId}, ${user.usuario_id}, this.value)"
+                                    ${user.permisos === 'PROPIETARIO' ? 'disabled' : ''}>
+                                    <option value="LECTURA" ${user.permisos === "LECTURA" ? "selected" : ""}>Lectura</option>
+                                    <option value="ESCRITURA" ${user.permisos === "ESCRITURA" ? "selected" : ""}>Escritura</option>
+                                </select>
+                                <button onclick="removeUserPermission(${taskId}, ${user.usuario_id})">
+                                    <i class="material-icons">delete</i>
+                                </button>
+                            </div>
+                        `;
                         container.appendChild(userItem);
                     });
                 } else {
                     const emptyMsg = document.createElement("div");
                     emptyMsg.className = "empty-shared-users";
                     emptyMsg.innerHTML = `
-            <i class="material-icons">people</i>
-            <p>No hay otros usuarios con acceso</p>
-          `;
+                        <i class="material-icons">people</i>
+                        <p>No hay otros usuarios con acceso</p>
+                    `;
                     container.appendChild(emptyMsg);
                 }
             })
             .catch((error) => {
                 console.error("Error al cargar usuarios compartidos:", error);
-                showNotification(
-                    "Error al cargar usuarios con acceso",
-                    "error"
-                );
+                showNotification("Error al cargar usuarios con acceso", "error");
             });
     }
 
@@ -579,22 +592,34 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {string} newPermission - Nuevo nivel de permiso
      */
     function updateUserPermission(taskId, userId, newPermission) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
+        if (!['LECTURA', 'ESCRITURA'].includes(newPermission)) {
+            showNotification('Permiso inválido. Solo se permite LECTURA o ESCRITURA', 'error');
+            return;
+        }
+    
         apiFetch(`/api/tareas/${taskId}/permisos`, {
-            method: "PUT",
-            body: { usuario_id: userId, permisos: newPermission },
-        })
-            .then(() => {
-                showNotification(
-                    "Permisos actualizados correctamente",
-                    "success"
-                );
-                loadSharedUsers(taskId);
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                usuario_id: userId,
+                permisos: newPermission
             })
-            .catch((error) => {
-                console.error("Error al actualizar permisos:", error);
-                showNotification("Error al actualizar permisos", "error");
-                loadSharedUsers(taskId);
-            });
+        })
+        .then(() => {
+            showNotification('Permisos actualizados correctamente', 'success');
+            loadSharedUsers(taskId);
+        })
+        .catch((error) => {
+            console.error('Error al actualizar permisos:', error);
+            const errorMsg = error.details?.error || 'Error al actualizar permisos';
+            showNotification(errorMsg, 'error');
+            loadSharedUsers(taskId);
+        });
     }
 
     /**
@@ -603,23 +628,32 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {number} userId - ID del usuario
      */
     function removeUserPermission(taskId, userId) {
-        if (!confirm("¿Estás seguro de eliminar el acceso de este usuario?")) {
+        if (!confirm('¿Estás seguro de eliminar el acceso de este usuario?')) {
             return;
         }
-
+    
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
         apiFetch(`/api/tareas/${taskId}/permisos`, {
-            method: "DELETE",
-            body: { usuario_id: userId },
-        })
-            .then(() => {
-                showNotification("Acceso eliminado correctamente", "success");
-                loadSharedUsers(taskId);
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                usuario_id: userId
             })
-            .catch((error) => {
-                console.error("Error al eliminar permisos:", error);
-                showNotification("Error al eliminar acceso", "error");
-                loadSharedUsers(taskId);
-            });
+        })
+        .then(() => {
+            showNotification('Acceso eliminado correctamente', 'success');
+            loadSharedUsers(taskId);
+        })
+        .catch((error) => {
+            console.error('Error al eliminar permisos:', error);
+            const errorMsg = error.details?.error || 'Error al eliminar acceso';
+            showNotification(errorMsg, 'error');
+            loadSharedUsers(taskId);
+        });
     }
 
     /**

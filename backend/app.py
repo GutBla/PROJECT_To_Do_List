@@ -255,7 +255,7 @@ def get_tarea(tarea_id):
             },
             'permisos': ut.permisos,
             'fecha_asignacion': ut.fecha_asignacion.isoformat()
-        } for ut in shared_users]
+        } for ut in shared_users if ut.permisos != 'PROPIETARIO']
     })
 
 @app.route('/api/tareas/<int:tarea_id>', methods=['PUT'])
@@ -482,86 +482,170 @@ def delete_categoria(categoria_id):
         return jsonify({'error': 'Error al eliminar la categoría', 'detalle': str(e)}), 500
 
 @app.route('/api/tareas/<int:tarea_id>/compartir', methods=['POST'])
+@csrf.exempt  # Si estás usando CSRF protection
 def compartir_tarea(tarea_id):
     if 'user_id' not in session:
         return jsonify({'error': 'No autorizado'}), 401
     
-    data = request.get_json()
-    if not data or 'email' not in data:
-        return jsonify({'error': 'Datos incompletos'}), 400
-    
-    usuario_email = data['email']
-    permisos = data.get('permisos', 'LECTURA')
-    
-    tarea = db.session.get(Tarea, tarea_id)
-    if not tarea or tarea.usuario_id != session['user_id']:
-        return jsonify({'error': 'No tienes permisos para compartir esta tarea'}), 403
-    
-    usuario = db.session.query(Usuario).filter_by(email=usuario_email).first()
-    if not usuario:
-        return jsonify({'error': 'Usuario no encontrado'}), 404
-    
-    if usuario.id == session['user_id']:
-        return jsonify({'error': 'No puedes compartir la tarea contigo mismo'}), 400
-    
-    existente = db.session.query(UsuarioTarea).filter_by(
-        usuario_id=usuario.id,
-        tarea_id=tarea_id
-    ).first()
-    
-    if existente:
-        return jsonify({'error': 'La tarea ya está compartida con este usuario'}), 400
-    
-    compartir = UsuarioTarea(
-        usuario_id=usuario.id,
-        tarea_id=tarea_id,
-        permisos=permisos
-    )
-    db.session.add(compartir)
-    db.session.commit()
-    
-    return jsonify({
-        'mensaje': f'Tarea compartida con {usuario_email}',
-        'usuario': {
-            'usuario_id': usuario.id,
-            'email': usuario.email,
-            'nombre_completo': usuario.nombre_completo,
-            'permisos': permisos
-        }
-    }), 201
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'Datos no proporcionados'}), 400
+        
+        email = data.get('email')
+        permisos = data.get('permisos', 'LECTURA')
+        
+        if not email:
+            return jsonify({'error': 'El email es requerido'}), 400
+        
+        # Validar permisos
+        if permisos not in ['LECTURA', 'ESCRITURA']:
+            return jsonify({'error': 'Permisos inválidos. Use LECTURA o ESCRITURA'}), 400
+        
+        tarea = Tarea.query.get_or_404(tarea_id)
+        
+        # Verificar que el usuario es el propietario
+        if tarea.usuario_id != session['user_id']:
+            return jsonify({'error': 'Solo el propietario puede compartir la tarea'}), 403
+        
+        usuario = Usuario.query.filter_by(email=email).first()
+        if not usuario:
+            return jsonify({'error': 'Usuario no encontrado'}), 404
+        
+        # Evitar auto-compartir
+        if usuario.id == session['user_id']:
+            return jsonify({'error': 'No puedes compartir la tarea contigo mismo'}), 400
+        
+        # Verificar si ya está compartida
+        existente = UsuarioTarea.query.filter_by(
+            usuario_id=usuario.id,
+            tarea_id=tarea_id
+        ).first()
+        
+        if existente:
+            return jsonify({'error': 'La tarea ya está compartida con este usuario'}), 400
+        
+        # Crear el nuevo permiso
+        nuevo_permiso = UsuarioTarea(
+            usuario_id=usuario.id,
+            tarea_id=tarea_id,
+            permisos=permisos
+        )
+        
+        db.session.add(nuevo_permiso)
+        db.session.commit()
+        
+        return jsonify({
+            'mensaje': f'Tarea compartida con {email}',
+            'usuario': {
+                'id': usuario.id,
+                'email': usuario.email,
+                'nombre_completo': usuario.nombre_completo,
+                'permisos': permisos
+            }
+        }), 201
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error al compartir tarea: {str(e)}")
+        return jsonify({'error': 'Error interno al compartir la tarea'}), 500
 
-@app.route('/api/tareas/<int:tarea_id>/permisos', methods=['PUT', 'DELETE'])
-def gestionar_permisos(tarea_id):
+@app.route('/api/tareas/<int:tarea_id>/permisos', methods=['PUT'])
+def actualizar_permisos(tarea_id):
     if 'user_id' not in session:
         return jsonify({'error': 'No autorizado'}), 401
     
-    if not validate_task_owner(tarea_id, session['user_id']):
-        return jsonify({'error': 'Solo el propietario puede gestionar permisos'}), 403
-    
-    data = request.get_json()
-    usuario_id = data['usuario_id']
-    
-    permiso = UsuarioTarea.query.filter_by(
-        usuario_id=usuario_id,
-        tarea_id=tarea_id
-    ).first()
-    
-    if not permiso:
-        return jsonify({'error': 'El usuario no tiene acceso a esta tarea'}), 404
-    
-    if request.method == 'PUT':
-        nuevos_permisos = data.get('permisos')
-        if not nuevos_permisos or nuevos_permisos not in ['LECTURA', 'ESCRITURA']:
-            return jsonify({'error': 'Permisos inválidos'}), 400
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'Datos no proporcionados'}), 400
         
+        usuario_id = data.get('usuario_id')
+        nuevos_permisos = data.get('permisos')
+        
+        if not usuario_id or not nuevos_permisos:
+            return jsonify({'error': 'Datos incompletos'}), 400
+        
+        # Validar que los permisos sean válidos
+        if nuevos_permisos not in ['LECTURA', 'ESCRITURA']:
+            return jsonify({'error': 'Permisos inválidos. Solo se permite LECTURA o ESCRITURA'}), 400
+        
+        # Verificar que la tarea existe y el usuario es el propietario
+        tarea = Tarea.query.get_or_404(tarea_id)
+        if tarea.usuario_id != session['user_id']:
+            return jsonify({'error': 'Solo el propietario puede modificar permisos'}), 403
+        
+        # Verificar que no es el propietario intentando modificarse a sí mismo
+        if usuario_id == session['user_id']:
+            return jsonify({'error': 'No puedes modificar tus propios permisos'}), 400
+        
+        # Buscar el permiso existente
+        permiso = UsuarioTarea.query.filter_by(
+            usuario_id=usuario_id,
+            tarea_id=tarea_id
+        ).first()
+        
+        if not permiso:
+            return jsonify({'error': 'El usuario no tiene acceso a esta tarea'}), 404
+        
+        # Actualizar permisos
         permiso.permisos = nuevos_permisos
         db.session.commit()
-        return jsonify({'mensaje': 'Permisos actualizados correctamente'})
+        
+        return jsonify({
+            'mensaje': 'Permisos actualizados correctamente',
+            'permisos': nuevos_permisos
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error al actualizar permisos: {str(e)}")
+        return jsonify({'error': 'Error interno al actualizar permisos'}), 500
     
-    elif request.method == 'DELETE':
+@app.route('/api/tareas/<int:tarea_id>/permisos', methods=['DELETE'])
+def eliminar_permisos(tarea_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'Datos no proporcionados'}), 400
+        
+        usuario_id = data.get('usuario_id')
+        if not usuario_id:
+            return jsonify({'error': 'ID de usuario no proporcionado'}), 400
+        
+        # Verificar que la tarea existe y el usuario es el propietario
+        tarea = Tarea.query.get_or_404(tarea_id)
+        if tarea.usuario_id != session['user_id']:
+            return jsonify({'error': 'Solo el propietario puede eliminar permisos'}), 403
+        
+        # Verificar que no es el propietario intentando eliminarse a sí mismo
+        if usuario_id == session['user_id']:
+            return jsonify({'error': 'No puedes eliminar tus propios permisos'}), 400
+        
+        # Buscar y eliminar el permiso
+        permiso = UsuarioTarea.query.filter_by(
+            usuario_id=usuario_id,
+            tarea_id=tarea_id
+        ).first()
+        
+        if not permiso:
+            return jsonify({'error': 'El usuario no tiene acceso a esta tarea'}), 404
+        
         db.session.delete(permiso)
         db.session.commit()
-        return jsonify({'mensaje': 'Permisos eliminados correctamente'})
+        
+        return jsonify({
+            'mensaje': 'Permisos eliminados correctamente',
+            'usuario_id': usuario_id
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error al eliminar permisos: {str(e)}")
+        return jsonify({'error': 'Error interno al eliminar permisos'}), 500
 
 with app.app_context():
     if not CategoriaPredeterminada.query.first():
