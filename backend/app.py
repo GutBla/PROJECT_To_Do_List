@@ -5,6 +5,7 @@ from config import Config
 from forms import LoginForm, RegistrationForm
 from models import db, Tarea, UsuarioTarea, Usuario, CategoriaPredeterminada, Categoria
 from trigger import create_trigger, drop_trigger
+from stored_procedure import create_stored_procedure, drop_stored_procedure, execute_stored_procedure
 
 # Configuración inicial de la aplicación Flask
 # ----------------------------------------------
@@ -66,6 +67,8 @@ with app.app_context():
     db.create_all()
     db.session.execute(db.text(drop_trigger()))
     db.session.execute(db.text(create_trigger()))
+    db.session.execute(db.text(drop_stored_procedure()))
+    db.session.execute(db.text(create_stored_procedure()))
     db.session.commit()
     initialize_default_categories()
 
@@ -159,6 +162,11 @@ def get_tareas():
         query = query.filter(Tarea.categoria_id == categoria_id)
     
     tareas = query.all()
+    
+    for tarea in tareas:
+        if tarea.estado not in ['EN_PROGRESO', 'COMPLETADA']:
+            db.session.execute(db.text(execute_stored_procedure()))
+            db.session.commit()
     
     return jsonify([{
         'id': t.id,
