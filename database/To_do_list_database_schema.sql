@@ -48,7 +48,7 @@ CREATE TABLE Tarea (
     FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-CREATE TABLE Usuario_Tarea (
+CREATE TABLE UsuarioTarea (
     usuario_id INT NOT NULL,
     tarea_id INT NOT NULL,
     fecha_asignacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -56,4 +56,16 @@ CREATE TABLE Usuario_Tarea (
     PRIMARY KEY (usuario_id, tarea_id),
     FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE,
     FOREIGN KEY (tarea_id) REFERENCES Tarea(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE LogTareaEliminada (
+    id INTEGER PRIMARY KEY,
+    tarea_id INTEGER NOT NULL,
+    usuario_id INTEGER NOT NULL,
+    titulo VARCHAR(255) NOT NULL,
+    descripcion TEXT,
+    estado ENUM('NUEVA', 'EN_PROGRESO', 'COMPLETADA', 'PENDIENTE') NOT NULL,
+    fecha_vencimiento DATE,
+    fecha_completado TIMESTAMP,
+    fecha_eliminacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
