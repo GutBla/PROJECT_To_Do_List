@@ -36,7 +36,10 @@
 
     <div class="form-group">
       {{ form.password.label }}
-      {{ form.password(class="form-control", id="password") }}
+      <div class="password-input-container">
+        {{ form.password(class="form-control", id="password") }}
+        <i class="material-icons toggle-password" aria-label="Mostrar contraseña" role="button">visibility_off</i>
+      </div>
       {% for error in form.password.errors %}
       <div class="notification error show">{{ error }}</div>
       {% endfor %}

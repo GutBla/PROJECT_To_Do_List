@@ -44,6 +44,34 @@
   animation: fadeInUp 0.5s ease;
 }
 
+.password-input-container {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.password-input-container input {
+  padding-right: 40px !important;
+}
+
+.password-input-container .toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--gray);
+  user-select: none;
+  transition: color 0.3s ease;
+}
+
+.password-input-container .toggle-password:hover {
+  color: var(--primary);
+}
+
+.password-input-container input[type="text"].password-visible {
+  letter-spacing: 1px;
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
