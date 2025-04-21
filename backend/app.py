@@ -4,6 +4,7 @@ from flask_wtf import CSRFProtect
 from config import Config
 from forms import LoginForm, RegistrationForm
 from models import db, Tarea, UsuarioTarea, Usuario, CategoriaPredeterminada, Categoria
+from trigger import create_trigger, drop_trigger
 
 # Configuración inicial de la aplicación Flask
 # ----------------------------------------------
@@ -63,6 +64,9 @@ def initialize_default_categories():
 # ------------------------------------------------
 with app.app_context():
     db.create_all()
+    db.session.execute(db.text(drop_trigger()))
+    db.session.execute(db.text(create_trigger()))
+    db.session.commit()
     initialize_default_categories()
 
 # Rutas de autenticación ----------------------------------
