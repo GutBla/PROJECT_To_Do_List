@@ -284,10 +284,13 @@ def update_tarea(tarea_id):
     if 'estado' in data:
         if data['estado'] not in ['NUEVA', 'EN_PROGRESO', 'COMPLETADA', 'PENDIENTE']:
             return jsonify({'error': 'Estado inválido'}), 400
+        
+        estado_anterior = tarea.estado
         tarea.estado = data['estado']
-        if data['estado'] == 'COMPLETADA' and tarea.estado != 'COMPLETADA':
+        
+        if estado_anterior != 'COMPLETADA' and data['estado'] == 'COMPLETADA':
             tarea.fecha_completado = db.func.current_timestamp()
-        elif data['estado'] != 'COMPLETADA' and tarea.estado == 'COMPLETADA':
+        elif estado_anterior == 'COMPLETADA' and data['estado'] != 'COMPLETADA':
             tarea.fecha_completado = None
             
     if 'fecha_vencimiento' in data:
