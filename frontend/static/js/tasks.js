@@ -671,7 +671,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const categoryId = document.getElementById("editCategoryId").value;
         const categoryData = {
             nombre: document.getElementById("editCategoryName").value,
-            descripcion: document.getElementById("editCategoryDescription").value
+            descripcion: document.getElementById("editCategoryDescription")
+                .value,
         };
 
         // Obtener el token CSRF del meta tag
@@ -682,14 +683,21 @@ document.addEventListener("DOMContentLoaded", function () {
         // Configuración de la solicitud
         const headers = {
             "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken
+            "X-CSRFToken": csrfToken,
         };
 
         const body = JSON.stringify(categoryData);
 
-        apiFetch(`/api/categorias/${categoryId}`, { method: "PUT", body, headers })
+        apiFetch(`/api/categorias/${categoryId}`, {
+            method: "PUT",
+            body,
+            headers,
+        })
             .then(() => {
-                showNotification("Categoría actualizada correctamente", "success");
+                showNotification(
+                    "Categoría actualizada correctamente",
+                    "success"
+                );
                 closeEditCategoryModal();
                 window.location.reload();
             })
@@ -712,10 +720,10 @@ document.addEventListener("DOMContentLoaded", function () {
     function confirmDeleteCategory(categoryId, categoryName) {
         const confirmMessage = document.getElementById("confirmDeleteMessage");
         confirmMessage.textContent = `¿Estás seguro de que deseas eliminar la categoría "${categoryName}"?`;
-        
+
         const confirmBtn = document.getElementById("confirmDeleteBtn");
         confirmBtn.onclick = () => deleteCategory(categoryId);
-        
+
         document.getElementById("confirmDeleteModal").classList.add("active");
     }
 
@@ -723,7 +731,9 @@ document.addEventListener("DOMContentLoaded", function () {
      * Cierra el modal de confirmación de eliminación
      */
     function closeConfirmDeleteModal() {
-        document.getElementById("confirmDeleteModal").classList.remove("active");
+        document
+            .getElementById("confirmDeleteModal")
+            .classList.remove("active");
     }
 
     /**
@@ -739,12 +749,15 @@ document.addEventListener("DOMContentLoaded", function () {
         // Configuración de la solicitud
         const headers = {
             "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken
+            "X-CSRFToken": csrfToken,
         };
 
         apiFetch(`/api/categorias/${categoryId}`, { method: "DELETE", headers })
             .then(() => {
-                showNotification("Categoría eliminada correctamente", "success");
+                showNotification(
+                    "Categoría eliminada correctamente",
+                    "success"
+                );
                 closeConfirmDeleteModal();
                 window.location.reload();
             })
@@ -774,7 +787,17 @@ document.addEventListener("DOMContentLoaded", function () {
     };
     window.deleteTask = function (taskId) {
         if (confirm("¿Estás seguro de eliminar esta tarea?")) {
-            apiFetch(`/api/tareas/${taskId}`, { method: "DELETE" })
+            const csrfToken = document
+                .querySelector('meta[name="csrf-token"]')
+                .getAttribute("content");
+
+            apiFetch(`/api/tareas/${taskId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken,
+                },
+            })
                 .then(() => {
                     showNotification(
                         "Tarea eliminada correctamente",
