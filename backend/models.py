@@ -67,3 +67,18 @@ class UsuarioTarea(db.Model):
     permisos = db.Column(db.Enum('LECTURA', 'ESCRITURA', 'PROPIETARIO'), default='LECTURA')
     
     usuario = db.relationship('Usuario', backref='tareas_compartidas')
+
+class LogTareaEliminada(db.Model):
+    __tablename__ = 'LogTareaEliminada'
+    id = db.Column(db.Integer, primary_key=True)
+    tarea_id = db.Column(db.Integer, nullable=False)
+    usuario_id = db.Column(db.Integer, nullable=False)
+    titulo = db.Column(db.String(255), nullable=False)
+    descripcion = db.Column(db.Text)
+    estado = db.Column(db.Enum('NUEVA', 'EN_PROGRESO', 'COMPLETADA', 'PENDIENTE'), nullable=False)
+    fecha_vencimiento = db.Column(db.Date)
+    fecha_completado = db.Column(db.TIMESTAMP)
+    fecha_eliminacion = db.Column(db.TIMESTAMP, default=db.func.current_timestamp())
+    
+    def __repr__(self):
+        return f"<LogTareaEliminada {self.id} - Tarea {self.tarea_id}>"
