@@ -42,12 +42,12 @@ class Categoria(db.Model):
 class Tarea(db.Model):
     __tablename__ = 'Tarea'
     id = db.Column(db.Integer, primary_key=True)
-    categoria_id = db.Column(db.Integer, db.ForeignKey('Categoria.id'))
+    categoria_id = db.Column(db.Integer, db.ForeignKey('Categoria.id'), index=True)
     usuario_id = db.Column(db.Integer, db.ForeignKey('Usuario.id'), nullable=False, index=True)
     titulo = db.Column(db.String(255), nullable=False)
     descripcion = db.Column(db.Text)
     estado = db.Column(db.Enum('NUEVA', 'EN_PROGRESO', 'COMPLETADA', 'PENDIENTE'), default='NUEVA', index=True)
-    fecha_vencimiento = db.Column(db.Date)
+    fecha_vencimiento = db.Column(db.Date, index=True)
     fecha_creacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     fecha_actualizacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
     fecha_completado = db.Column(db.TIMESTAMP)
@@ -62,7 +62,7 @@ class Tarea(db.Model):
 class UsuarioTarea(db.Model):
     __tablename__ = 'Usuario_Tarea'
     usuario_id = db.Column(db.Integer, db.ForeignKey('Usuario.id'), primary_key=True)
-    tarea_id = db.Column(db.Integer, db.ForeignKey('Tarea.id'), primary_key=True)
+    tarea_id = db.Column(db.Integer, db.ForeignKey('Tarea.id'), primary_key=True, index=True)
     fecha_asignacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     permisos = db.Column(db.Enum('LECTURA', 'ESCRITURA', 'PROPIETARIO'), default='LECTURA')
     
