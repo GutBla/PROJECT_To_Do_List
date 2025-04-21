@@ -72,18 +72,19 @@
 }
 
 .categories {
-  flex: 1;
+  margin-top: 30px;
   overflow-y: auto;
-  padding: 16px 0;
 }
 
 .category-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 24px;
+  padding: 10px 15px;
+  margin-bottom: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: background-color 0.3s;
+  position: relative;
 }
 
 .category-item:hover {
@@ -976,4 +977,58 @@
   .user-profile {
     display: none;
   }
+}
+
+/* Agregar estilos para los botones de acción de categorías */
+.category-actions {
+  position: absolute;
+  right: 10px;
+  display: none;
+  gap: 5px;
+}
+
+.category-item:hover .category-actions {
+  display: flex;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.icon-button i {
+  font-size: 18px;
+}
+
+.icon-button.edit-button:hover {
+  background-color: rgba(0, 123, 255, 0.2);
+  color: #007bff;
+}
+
+.icon-button.delete-button:hover {
+  background-color: rgba(220, 53, 69, 0.2);
+  color: #dc3545;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+/* Asegurar que los eventos de click sean independientes */
+.category-actions button {
+  z-index: 2;
 }

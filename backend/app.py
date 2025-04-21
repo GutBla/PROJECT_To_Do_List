@@ -393,6 +393,87 @@ def create_categoria():
         db.session.rollback()
         return jsonify({'error': 'Error al crear la categoría', 'detalle': str(e)}), 500
 
+@app.route('/api/categorias/<int:categoria_id>', methods=['PUT'])
+def update_categoria(categoria_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    
+    categoria = Categoria.query.filter_by(id=categoria_id, usuario_id=session['user_id']).first()
+    if not categoria:
+        return jsonify({'error': 'Categoría no encontrada o no tienes permisos para editarla'}), 404
+    
+    data = request.get_json()
+    if not data or not data.get('nombre'):
+        return jsonify({'error': 'El nombre es requerido'}), 400
+    
+    if len(data['nombre']) > 255:
+        return jsonify({'error': 'El nombre no puede exceder los 255 caracteres'}), 400
+    
+    try:
+        # Obtener o crear la categoría predeterminada asociada
+        cat_pred = categoria.categoria_predeterminada
+        if cat_pred:
+            cat_pred.nombre = data['nombre']
+            cat_pred.descripcion = data.get('descripcion', cat_pred.descripcion)
+        else:
+            # Si no existe, crear una nueva categoría predeterminada
+            nueva_predeterminada = CategoriaPredeterminada(
+                nombre=data['nombre'],
+                descripcion=data.get('descripcion')
+            )
+            db.session.add(nueva_predeterminada)
+            db.session.flush() 
+            categoria.categoria_predeterminada_id = nueva_predeterminada.id
+        
+        db.session.commit()
+        
+        return jsonify({
+            'id': categoria.id,
+            'nombre': data['nombre'],
+            'mensaje': 'Categoría actualizada exitosamente'
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Error al actualizar la categoría', 'detalle': str(e)}), 500
+
+@app.route('/api/categorias/<int:categoria_id>', methods=['DELETE'])
+def delete_categoria(categoria_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+    
+    categoria = Categoria.query.filter_by(id=categoria_id, usuario_id=session['user_id']).first()
+    if not categoria:
+        return jsonify({'error': 'Categoría no encontrada o no tienes permisos para eliminarla'}), 404
+    
+    try:
+        # Actualizar tareas que tengan esta categoría
+        Tarea.query.filter_by(categoria_id=categoria_id).update({'categoria_id': None})
+        
+        # Eliminar la categoría
+        db.session.delete(categoria)
+        
+        # Si la categoría predeterminada asociada no es usada por otras categorías, eliminarla también
+        if categoria.categoria_predeterminada_id:
+            otras_categorias = Categoria.query.filter_by(
+                categoria_predeterminada_id=categoria.categoria_predeterminada_id
+            ).filter(Categoria.id != categoria_id).count()
+            
+            if otras_categorias == 0:
+                cat_pred = CategoriaPredeterminada.query.get(categoria.categoria_predeterminada_id)
+                if cat_pred:
+                    db.session.delete(cat_pred)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'mensaje': 'Categoría eliminada exitosamente'
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Error al eliminar la categoría', 'detalle': str(e)}), 500
+
 @app.route('/api/tareas/<int:tarea_id>/compartir', methods=['POST'])
 def compartir_tarea(tarea_id):
     if 'user_id' not in session:

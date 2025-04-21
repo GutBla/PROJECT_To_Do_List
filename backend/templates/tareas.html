@@ -59,6 +59,14 @@
           Personalizada
           {% endif %}
         </span>
+        <div class="category-actions">
+          <button class="icon-button edit-button" onclick="event.stopPropagation(); openEditCategoryModal('{{ categoria.id }}', '{% if categoria.categoria_predeterminada %}{{ categoria.categoria_predeterminada.nombre }}{% else %}Personalizada{% endif %}', '{% if categoria.categoria_predeterminada %}{{ categoria.categoria_predeterminada.descripcion or '' }}{% else %}{% endif %}')">
+            <i class="material-icons">edit</i>
+          </button>
+          <button class="icon-button delete-button" onclick="event.stopPropagation(); confirmDeleteCategory('{{ categoria.id }}', '{% if categoria.categoria_predeterminada %}{{ categoria.categoria_predeterminada.nombre }}{% else %}Personalizada{% endif %}')">
+            <i class="material-icons">delete</i>
+          </button>
+        </div>
       </div>
       {% endfor %}
 
@@ -168,6 +176,52 @@
         <button type="submit" class="btn btn-primary">Crear</button>
       </div>
     </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="editCategoryModal">
+  <div class="task-modal">
+    <div class="modal-header">
+      <h2>Editar Categoría</h2>
+      <button class="close-modal" onclick="closeEditCategoryModal()">&times;</button>
+    </div>
+
+    <form id="editCategoryForm" onsubmit="updateCategory(event)">
+      <input type="hidden" id="editCategoryId">
+      <div class="form-group">
+        <label for="editCategoryName">Nombre</label>
+        <input type="text" id="editCategoryName" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <label for="editCategoryDescription">Descripción</label>
+        <textarea id="editCategoryDescription" class="form-control" rows="3"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeEditCategoryModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="confirmDeleteModal">
+  <div class="task-modal">
+    <div class="modal-header">
+      <h2>Confirmar eliminación</h2>
+      <button class="close-modal" onclick="closeConfirmDeleteModal()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <p id="confirmDeleteMessage">¿Estás seguro de que deseas eliminar esta categoría?</p>
+      <p>Las tareas asociadas a esta categoría quedarán sin categoría.</p>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline" onclick="closeConfirmDeleteModal()">Cancelar</button>
+      <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
+    </div>
   </div>
 </div>
 

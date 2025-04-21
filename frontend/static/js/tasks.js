@@ -628,12 +628,136 @@ document.addEventListener("DOMContentLoaded", function () {
      * @returns {string} Texto descriptivo
      */
     function getPermissionText(permiso) {
-        const permissions = {
-            LECTURA: "Lectura",
-            ESCRITURA: "Escritura",
-            PROPIETARIO: "Propietario",
+        switch (permiso) {
+            case "LECTURA":
+                return "Lectura";
+            case "ESCRITURA":
+                return "Escritura";
+            case "PROPIETARIO":
+                return "Propietario";
+            default:
+                return permiso;
+        }
+    }
+
+    /**
+     * Abre el modal para editar una categoría
+     * @param {number} categoryId - ID de la categoría
+     * @param {string} name - Nombre actual de la categoría
+     * @param {string} description - Descripción actual de la categoría
+     */
+    function openEditCategoryModal(categoryId, name, description) {
+        document.getElementById("editCategoryId").value = categoryId;
+        document.getElementById("editCategoryName").value = name;
+        document.getElementById("editCategoryDescription").value = description;
+        document.getElementById("editCategoryModal").classList.add("active");
+    }
+
+    /**
+     * Cierra el modal de edición de categoría
+     */
+    function closeEditCategoryModal() {
+        document.getElementById("editCategoryModal").classList.remove("active");
+        document.getElementById("editCategoryForm").reset();
+    }
+
+    /**
+     * Actualiza una categoría existente
+     * @param {Event} event - Evento submit
+     */
+    function updateCategory(event) {
+        event.preventDefault();
+
+        const categoryId = document.getElementById("editCategoryId").value;
+        const categoryData = {
+            nombre: document.getElementById("editCategoryName").value,
+            descripcion: document.getElementById("editCategoryDescription").value
         };
-        return permissions[permiso] || permiso;
+
+        // Obtener el token CSRF del meta tag
+        const csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            .getAttribute("content");
+
+        // Configuración de la solicitud
+        const headers = {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken
+        };
+
+        const body = JSON.stringify(categoryData);
+
+        apiFetch(`/api/categorias/${categoryId}`, { method: "PUT", body, headers })
+            .then(() => {
+                showNotification("Categoría actualizada correctamente", "success");
+                closeEditCategoryModal();
+                window.location.reload();
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                showNotification(
+                    error.details && error.details.error
+                        ? error.details.error
+                        : "Error al actualizar la categoría",
+                    "error"
+                );
+            });
+    }
+
+    /**
+     * Muestra modal de confirmación para eliminar una categoría
+     * @param {number} categoryId - ID de la categoría
+     * @param {string} categoryName - Nombre de la categoría
+     */
+    function confirmDeleteCategory(categoryId, categoryName) {
+        const confirmMessage = document.getElementById("confirmDeleteMessage");
+        confirmMessage.textContent = `¿Estás seguro de que deseas eliminar la categoría "${categoryName}"?`;
+        
+        const confirmBtn = document.getElementById("confirmDeleteBtn");
+        confirmBtn.onclick = () => deleteCategory(categoryId);
+        
+        document.getElementById("confirmDeleteModal").classList.add("active");
+    }
+
+    /**
+     * Cierra el modal de confirmación de eliminación
+     */
+    function closeConfirmDeleteModal() {
+        document.getElementById("confirmDeleteModal").classList.remove("active");
+    }
+
+    /**
+     * Elimina una categoría
+     * @param {number} categoryId - ID de la categoría
+     */
+    function deleteCategory(categoryId) {
+        // Obtener el token CSRF del meta tag
+        const csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            .getAttribute("content");
+
+        // Configuración de la solicitud
+        const headers = {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken
+        };
+
+        apiFetch(`/api/categorias/${categoryId}`, { method: "DELETE", headers })
+            .then(() => {
+                showNotification("Categoría eliminada correctamente", "success");
+                closeConfirmDeleteModal();
+                window.location.reload();
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                closeConfirmDeleteModal();
+                showNotification(
+                    error.details && error.details.error
+                        ? error.details.error
+                        : "Error al eliminar la categoría",
+                    "error"
+                );
+            });
     }
 
     // Funciones globales
@@ -688,4 +812,9 @@ document.addEventListener("DOMContentLoaded", function () {
     window.handleShareSubmit = handleShareSubmit;
     window.updateUserPermission = updateUserPermission;
     window.removeUserPermission = removeUserPermission;
+    window.openEditCategoryModal = openEditCategoryModal;
+    window.closeEditCategoryModal = closeEditCategoryModal;
+    window.updateCategory = updateCategory;
+    window.confirmDeleteCategory = confirmDeleteCategory;
+    window.closeConfirmDeleteModal = closeConfirmDeleteModal;
 });
