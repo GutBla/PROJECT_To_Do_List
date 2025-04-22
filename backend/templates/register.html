@@ -1,0 +1,80 @@
+{% extends "index.html" %}
+
+{% block title %}Registro - ToDo List{% endblock %}
+
+{% block styles %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-header">
+  <h1>
+    <i class="material-icons">check_circle</i>
+    To-Do List
+</div>
+
+<div class="register-container">
+  <h1 class="register-title">Registro de Usuario</h1>
+
+  {% if error %}
+  <div class="notification error show">{{ error }}</div>
+  {% endif %}
+
+  <form class="register-form" method="post">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ form.nombre.label }}
+      {{ form.nombre(class="form-control", id="nombre") }}
+      {% for error in form.nombre.errors %}
+      <div class="notification error show">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      {{ form.email.label }}
+      {{ form.email(class="form-control", id="email") }}
+      {% for error in form.email.errors %}
+      <div class="notification error show">{{ error }}</div>
+      {% endfor %}
+    </div>
+    <div class="form-group">
+      {{ form.password.label }}
+      <div class="password-input-container">
+        {{ form.password(class="form-control", id="password") }}
+        <i class="material-icons toggle-password" aria-label="Mostrar contraseña" role="button">visibility_off</i>
+      </div>
+      {% for error in form.password.errors %}
+      <div class="notification error show">{{ error }}</div>
+      {% endfor %}
+    </div>
+    
+    <div class="form-group">
+      {{ form.confirm_password.label }}
+      <div class="password-input-container">
+        {{ form.confirm_password(class="form-control", id="confirm_password") }}
+        <i class="material-icons toggle-password" aria-label="Mostrar contraseña" role="button">visibility_off</i>
+      </div>
+      {% for error in form.confirm_password.errors %}
+      <div class="notification error show">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+      <i class="material-icons">person_add</i>
+      {{ form.submit.label.text }}
+    </button>
+  </form>
+
+  <div class="register-footer">
+    <p>¿Ya tienes una cuenta? <a href="/login">Inicia sesión aquí</a></p>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/shared.js') }}"></script>
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

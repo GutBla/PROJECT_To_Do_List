@@ -1,0 +1,100 @@
+/* Contenedor principal del formulario de registro */
+.register-container {
+  max-width: 480px;
+  margin: 0 auto 40px;
+  padding: 40px;
+  background-color: var(--white);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+/* Título del formulario de registro */
+.register-title {
+  font-size: 24px;
+  margin-bottom: 30px;
+  text-align: center;
+  color: var(--primary);
+}
+
+/* Botón dentro del formulario de registro */
+.register-form .btn {
+  width: 100%;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+/* Pie de página del formulario de registro */
+.register-footer {
+  text-align: center;
+  margin-top: 24px;
+  color: var(--gray);
+}
+
+/* Enlaces dentro del pie de página */
+.register-footer a {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* Efecto hover en los enlaces del pie de página */
+.register-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Animación de entrada para el contenedor */
+.register-container {
+  animation: fadeIn 0.6s ease;
+}
+
+/* Estilos específicos para el toggle de contraseña en registro */
+.password-input-container {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.password-input-container input {
+  padding-right: 40px !important;
+}
+
+.password-input-container .toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--gray);
+  user-select: none;
+  transition: color 0.3s ease;
+}
+
+.password-input-container .toggle-password:hover {
+  color: var(--primary);
+}
+
+/* Efecto visual para confirmación de contraseña */
+.password-input-container #confirm_password {
+  margin-bottom: 5px;
+}
+
+/* Definición de la animación fadeIn */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Estilos para pantallas pequeñas (máximo 576px) */
+@media (max-width: 576px) {
+  .register-container {
+    padding: 30px 20px;
+    margin: 0 15px;
+  }
+
+  .register-title {
+    font-size: 20px;
+  }
+}
