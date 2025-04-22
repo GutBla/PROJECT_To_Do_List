@@ -1,8 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# Inicialización de la base de datos con SQLAlchemy
-# -------------------------------------------------
+# Configuración de la base de datos ----------------------
 db = SQLAlchemy()
 
 # Modelos de la base de datos ----------------------
