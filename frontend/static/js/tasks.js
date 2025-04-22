@@ -171,12 +171,13 @@ document.addEventListener("DOMContentLoaded", function () {
     
             kanbanBoard.appendChild(column);
     
+            const tasksContainer = column.querySelector(".kanban-column-tasks");
+            setupDragAndDrop(tasksContainer);
+    
             if (columnTasks.length > 0) {
-                const tasksContainer = column.querySelector(".kanban-column-tasks");
                 columnTasks.forEach((task) => 
                     tasksContainer.appendChild(createTaskCard(task))
                 );
-                setupDragAndDrop(tasksContainer);
             }
         });
     
@@ -309,13 +310,17 @@ document.addEventListener("DOMContentLoaded", function () {
     function handleDragEnter(e) {
         e.preventDefault();
         if (e.target.classList.contains("kanban-column-tasks")) {
-            e.target.style.backgroundColor = "rgba(0,0,0,0.05)";
+            e.target.style.backgroundColor = "rgba(240, 90, 126, 0.1)";
+            e.target.style.border = "2px dashed var(--primary)";
+            e.target.querySelector('.empty-column-message')?.classList.add('highlight-drop');
         }
     }
 
     function handleDragLeave(e) {
         if (e.target.classList.contains("kanban-column-tasks")) {
             e.target.style.backgroundColor = "";
+            e.target.style.border = "2px dashed rgba(0, 0, 0, 0.1)";
+            e.target.querySelector('.empty-column-message')?.classList.remove('highlight-drop');
         }
     }
 
@@ -323,6 +328,7 @@ document.addEventListener("DOMContentLoaded", function () {
         e.preventDefault();
         if (e.target.classList.contains("kanban-column-tasks")) {
             e.target.style.backgroundColor = "";
+            e.target.style.border = "2px dashed rgba(0, 0, 0, 0.1)";
 
             const taskId = e.dataTransfer.getData("text/plain");
             const newStatus = e.target.dataset.status;
