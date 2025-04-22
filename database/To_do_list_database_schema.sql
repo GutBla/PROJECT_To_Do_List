@@ -16,6 +16,8 @@ CREATE TABLE Usuario (
     fecha_actualizacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
+CREATE INDEX idx_usuario_email ON Usuario(email);
+
 CREATE TABLE CategoriaPredeterminada (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL UNIQUE,
@@ -33,6 +35,8 @@ CREATE TABLE Categoria (
     FOREIGN KEY (categoria_predeterminada_id) REFERENCES CategoriaPredeterminada(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
+CREATE INDEX idx_categoria_usuario_id ON Categoria(usuario_id);
+
 CREATE TABLE Tarea (
     id INT AUTO_INCREMENT PRIMARY KEY,
     categoria_id INT NULL,
@@ -48,6 +52,11 @@ CREATE TABLE Tarea (
     FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+CREATE INDEX idx_tarea_usuario_id ON Tarea(usuario_id);
+CREATE INDEX idx_tarea_categoria_id ON Tarea(categoria_id);
+CREATE INDEX idx_tarea_estado ON Tarea(estado);
+CREATE INDEX idx_tarea_fecha_vencimiento ON Tarea(fecha_vencimiento);
+
 CREATE TABLE UsuarioTarea (
     usuario_id INT NOT NULL,
     tarea_id INT NOT NULL,
@@ -57,6 +66,8 @@ CREATE TABLE UsuarioTarea (
     FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE,
     FOREIGN KEY (tarea_id) REFERENCES Tarea(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+CREATE INDEX idx_usuario_tarea_tarea_id ON UsuarioTarea(tarea_id);
 
 CREATE TABLE LogTareaEliminada (
     id INTEGER PRIMARY KEY,
