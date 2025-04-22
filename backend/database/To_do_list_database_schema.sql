@@ -80,3 +80,41 @@ CREATE TABLE LogTareaEliminada (
     fecha_completado TIMESTAMP,
     fecha_eliminacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
+
+CREATE PROCEDURE actualizar_tareas_vencidas()
+    BEGIN
+        UPDATE tarea
+        SET estado = 'Pendiente'
+        WHERE fecha_vencimiento <= CURDATE()
+        AND estado != 'Completada';
+    END;
+
+DROP PROCEDURE IF EXISTS actualizar_tareas_vencidas;
+
+CALL actualizar_tareas_vencidas();
+
+CREATE TRIGGER trigger_log_tarea_eliminada
+    AFTER DELETE ON Tarea
+    FOR EACH ROW
+    BEGIN
+        INSERT INTO LogTareaEliminada (
+            tarea_id,
+            usuario_id,
+            titulo,
+            descripcion,
+            estado,
+            fecha_vencimiento,
+            fecha_completado
+        )
+        VALUES (
+            OLD.id,
+            OLD.usuario_id,
+            OLD.titulo,
+            OLD.descripcion,
+            OLD.estado,
+            OLD.fecha_vencimiento,
+            OLD.fecha_completado
+        );
+    END;
+
+DROP TRIGGER IF EXISTS trigger_log_tarea_eliminada;
