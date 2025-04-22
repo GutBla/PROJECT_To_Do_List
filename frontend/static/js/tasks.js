@@ -146,43 +146,46 @@ document.addEventListener("DOMContentLoaded", function () {
      * @param {Array} tasks - Lista de tareas
      */
     function renderKanbanBoard(tasks) {
-        kanbanBoard.innerHTML = "";
-
-        if (tasks.length === 0) {
-            kanbanBoard.innerHTML = `
-        <div class="empty-tasks">
-          <i class="material-icons">assignment</i>
-          <p>No hay tareas registradas</p>
-        </div>
-      `;
-            return;
-        }
-
+        kanbanBoard.innerHTML = '';
+    
         statuses.forEach((status) => {
             const columnTasks = tasks.filter((task) => task.estado === status);
-
+            
             const column = document.createElement("div");
             column.className = `kanban-column ${status}`;
-
+    
             column.innerHTML = `
-        <div class="kanban-column-header">
-          ${status.replace("_", " ")} <span class="task-count">(${
-                columnTasks.length
-            })</span>
-        </div>
-        <div class="kanban-column-tasks" data-status="${status}">
-        </div>
-
-      `;
-
+                <div class="kanban-column-header">
+                    ${status.replace("_", " ")} <span class="task-count">(${columnTasks.length})</span>
+                </div>
+                <div class="kanban-column-tasks" data-status="${status}">
+                    ${columnTasks.length === 0 ? '<div class="empty-column-message">No hay tareas</div>' : ''}
+                </div>
+            `;
+    
             kanbanBoard.appendChild(column);
-
-            const tasksContainer = column.querySelector(".kanban-column-tasks");
-            columnTasks.forEach((task) =>
-                tasksContainer.appendChild(createTaskCard(task))
-            );
-            setupDragAndDrop(tasksContainer);
+    
+            if (columnTasks.length > 0) {
+                const tasksContainer = column.querySelector(".kanban-column-tasks");
+                columnTasks.forEach((task) => 
+                    tasksContainer.appendChild(createTaskCard(task))
+                );
+                setupDragAndDrop(tasksContainer);
+            }
         });
+    
+
+        if (tasks.length === 0) {
+            const emptyMessage = document.createElement('div');
+            emptyMessage.className = 'empty-kanban-container';
+            emptyMessage.innerHTML = `
+                <div class="empty-kanban-message">
+                    <i class="material-icons">assignment</i>
+                    <p>No hay tareas registradas</p>
+                </div>
+            `;
+            kanbanBoard.appendChild(emptyMessage);
+        }
     }
 
     /**
@@ -278,11 +281,9 @@ document.addEventListener("DOMContentLoaded", function () {
           }
           ${
               task.puede_eliminar
-                  ? `
-            <button class="task-card-button" onclick="event.stopPropagation(); deleteTask(${task.id})">
-              <i class="material-icons" style="font-size:18px;">delete</i>
-            </button>
-          `
+                  ? `<button class="task-card-button" onclick="event.stopPropagation(); deleteTask(${task.id}, '${escapeHtml(task.titulo)}')">
+               <i class="material-icons" style="font-size:18px;">delete</i>
+            </button>`
                   : ""
           }
           ${
@@ -852,6 +853,29 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
+    document.getElementById("confirmDeleteBtn").addEventListener("click", function() {
+        const taskId = this.dataset.taskId;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+    
+        apiFetch(`/api/tareas/${taskId}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken,
+            },
+        })
+        .then(() => {
+            showNotification("Tarea eliminada correctamente", "success");
+            closeConfirmDeleteModal();
+            loadTasks();
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            showNotification("Error al eliminar la tarea", "error");
+            closeConfirmDeleteModal();
+        });
+    });
+
     // Funciones globales
     window.filterTasksByCategory = filterTasksByCategory;
     window.openNewCategoryModal = openNewCategoryModal;
@@ -864,12 +888,26 @@ document.addEventListener("DOMContentLoaded", function () {
     window.editTask = function (taskId) {
         openTaskModal(taskId);
     };
-    window.deleteTask = function (taskId) {
-        if (confirm("¿Estás seguro de eliminar esta tarea?")) {
-            const csrfToken = document
-                .querySelector('meta[name="csrf-token"]')
-                .getAttribute("content");
 
+    window.deleteTask = function(taskId, taskTitle) {
+
+        const confirmModal = document.getElementById("confirmDeleteModal");
+        const confirmMessage = document.getElementById("confirmDeleteMessage");
+        const confirmBtn = document.getElementById("confirmDeleteBtn");
+        const warningText = document.getElementById("additionalWarning");
+    
+
+        confirmMessage.textContent = `¿Estás seguro de que deseas eliminar la tarea "${taskTitle || 'seleccionada'}"?`;
+        warningText.textContent = "Esta acción no se puede deshacer.";
+    
+
+        confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+        const newConfirmBtn = document.getElementById("confirmDeleteBtn");
+    
+
+        newConfirmBtn.onclick = function() {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+    
             apiFetch(`/api/tareas/${taskId}`, {
                 method: "DELETE",
                 headers: {
@@ -877,19 +915,28 @@ document.addEventListener("DOMContentLoaded", function () {
                     "X-CSRFToken": csrfToken,
                 },
             })
-                .then(() => {
-                    showNotification(
-                        "Tarea eliminada correctamente",
-                        "success"
-                    );
-                    loadTasks();
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                    showNotification("Error al eliminar la tarea", "error");
-                });
-        }
+            .then(() => {
+                showNotification("Tarea eliminada correctamente", "success");
+                closeConfirmDeleteModal();
+                loadTasks();
+            })
+            .catch((error) => {
+                console.error("Error al eliminar tarea:", error);
+                showNotification(
+                    error.details?.error || "Error al eliminar la tarea", 
+                    "error"
+                );
+                closeConfirmDeleteModal();
+            });
+        };
+
+        confirmModal.classList.add("active");
     };
+
+    window.closeConfirmDeleteModal = function() {
+        document.getElementById("confirmDeleteModal").classList.remove("active");
+    };
+
     window.updateTaskStatus = function (taskId, newStatus) {
         const csrfToken = document
             .querySelector('meta[name="csrf-token"]')
@@ -909,6 +956,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 showNotification("Error al actualizar el estado", "error");
             });
     };
+    window.closeConfirmDeleteModal = function() {
+    document.getElementById("confirmDeleteModal").classList.remove("active");
+};
     window.openShareModal = openShareModal;
     window.closeShareModal = closeShareModal;
     window.handleShareSubmit = handleShareSubmit;
