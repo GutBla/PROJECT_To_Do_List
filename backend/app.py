@@ -4,8 +4,8 @@ from flask_wtf import CSRFProtect
 from config import Config
 from forms import LoginForm, RegistrationForm
 from models import db, Tarea, UsuarioTarea, Usuario, CategoriaPredeterminada, Categoria
-from trigger import create_trigger, drop_trigger
-from stored_procedure import create_stored_procedure, drop_stored_procedure, execute_stored_procedure
+from database.triggers.trigger import create_trigger, drop_trigger
+from database.procedures.stored_procedure import create_stored_procedure, drop_stored_procedure, execute_stored_procedure
 
 # Configuración inicial de la aplicación Flask
 # ----------------------------------------------
