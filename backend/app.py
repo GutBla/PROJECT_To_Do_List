@@ -16,7 +16,7 @@ app.config.from_object(Config)
 # ------------------------------------------------
 csrf = CSRFProtect(app)
 
-# Inicialización de SQLAlchemy con la app
+# Vinculación de la base de datos con la app
 # ------------------------------------------------
 db.init_app(app)
 
