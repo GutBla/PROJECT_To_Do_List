@@ -1,7 +1,10 @@
+<!-- ========== Extiende la Plantilla Base ========== -->
 {% extends "index.html" %}
 
+<!-- ========== Título de la Página ========== -->
 {% block title %}Login - ToDo List{% endblock %}
 
+<!-- ========== Estilos Personalizados para la Página de Login ========== -->
 {% block styles %}
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -9,7 +12,9 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 {% endblock %}
 
+<!-- ========== Contenido Principal de la Página ========== -->
 {% block content %}
+<!-- ========== Encabezado de la Aplicación ========== -->
 <div class="app-header">
   <h1>
     <i class="material-icons">check_circle</i>
@@ -17,15 +22,20 @@
   </h1>
 </div>
 
+<!-- ========== Contenedor de Login ========== -->
 <div class="login-container">
   <h1 class="login-title">Iniciar Sesión</h1>
 
+  <!-- ========== Mensaje de Error si lo Hay ========== -->
   {% if error %}
   <div class="notification error show">{{ error }}</div>
   {% endif %}
 
+  <!-- ========== Formulario de Login ========== -->
   <form class="login-form" method="post">
     {{ form.hidden_tag() }}
+
+    <!-- ========== Campo de Email ========== -->
     <div class="form-group">
       {{ form.email.label }}
       {{ form.email(class="form-control", id="email") }}
@@ -34,6 +44,7 @@
       {% endfor %}
     </div>
 
+    <!-- ========== Campo de Contraseña con Icono ========== -->
     <div class="form-group">
       {{ form.password.label }}
       <div class="password-input-container">
@@ -45,18 +56,21 @@
       {% endfor %}
     </div>
 
+    <!-- ========== Botón de Envío ========== -->
     <button type="submit" class="btn btn-primary">
       <i class="material-icons">login</i>
       {{ form.submit.label.text }}
     </button>
   </form>
 
+  <!-- ========== Pie del Formulario ========== -->
   <div class="login-footer">
     <p>¿No tienes una cuenta? <a href="/register">Regístrate aquí</a></p>
   </div>
 </div>
 {% endblock %}
 
+<!-- ========== Scripts Específicos para Login ========== -->
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/shared.js') }}"></script>
 <script src="{{ url_for('static', filename='js/auth.js') }}"></script>

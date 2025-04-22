@@ -1,18 +1,32 @@
+<!-- ========== Estructura HTML Principal ========== -->
 <!DOCTYPE html>
 <html lang="es">
 
+<!-- ========== Head: Metadatos, Título y Estilos ========== -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    
+    <!-- ========== Título del Documento ========== -->
     <title>{% block title %}ToDo List{% endblock %}</title>
+    
+    <!-- ========== Icono del Sitio ========== -->
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icon/TodoList_icon.ico') }}">
+    
+    <!-- ========== Hoja de Estilos Principal ========== -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    
+    <!-- ========== Bloque para Estilos Adicionales ========== -->
     {% block styles %}{% endblock %}
 </head>
 
+<!-- ========== Body: Contenido y Scripts ========== -->
 <body>
+    <!-- ========== Bloque de Contenido Principal ========== -->
     {% block content %}{% endblock %}
+    
+    <!-- ========== Bloque para Scripts Adicionales ========== -->
     {% block scripts %}{% endblock %}
 </body>
 
