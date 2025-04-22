@@ -490,7 +490,6 @@ def delete_categoria(categoria_id):
         return jsonify({'error': 'Error al eliminar la categoría', 'detalle': str(e)}), 500
 
 @app.route('/api/tareas/<int:tarea_id>/compartir', methods=['POST'])
-@csrf.exempt  # Si estás usando CSRF protection
 def compartir_tarea(tarea_id):
     if 'user_id' not in session:
         return jsonify({'error': 'No autorizado'}), 401
