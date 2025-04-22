@@ -1,3 +1,4 @@
+/* ----- Modal ----- */
 .modal {
     position: fixed;
     top: 0;
@@ -11,6 +12,7 @@
     z-index: 1000;
 }
 
+/* ----- Contenido del Modal ----- */
 .modal-content {
     background-color: white;
     padding: 20px;
@@ -20,22 +22,26 @@
     max-width: 500px;
 }
 
+/* ----- Título del Modal ----- */
 .modal h2 {
     margin-top: 0;
     color: #333;
     font-size: 1.5em;
 }
 
+/* ----- Grupo de Formulario ----- */
 .form-group {
     margin-bottom: 15px;
 }
 
+/* ----- Etiqueta del Formulario ----- */
 .form-group label {
     display: block;
     margin-bottom: 5px;
     color: #555;
 }
 
+/* ----- Campos de Entrada del Formulario ----- */
 .form-group input,
 .form-group textarea {
     width: 100%;
@@ -45,11 +51,13 @@
     font-size: 1em;
 }
 
+/* ----- Área de Texto del Formulario ----- */
 .form-group textarea {
     min-height: 100px;
     resize: vertical;
 }
 
+/* ----- Botones del Modal ----- */
 .modal-buttons {
     display: flex;
     justify-content: flex-end;
@@ -57,6 +65,7 @@
     margin-top: 20px;
 }
 
+/* ----- Estilo General de los Botones ----- */
 .btn {
     padding: 8px 16px;
     border: none;
@@ -66,6 +75,7 @@
     transition: background-color 0.3s;
 }
 
+/* ----- Estilo del Botón Primario ----- */
 .btn-primary {
     background-color: #4CAF50;
     color: white;
@@ -75,6 +85,7 @@
     background-color: #45a049;
 }
 
+/* ----- Estilo del Botón Secundario ----- */
 .btn-secondary {
     background-color: #f1f1f1;
     color: #333;
@@ -84,6 +95,7 @@
     background-color: #e0e0e0;
 }
 
+/* ----- Estilo del Botón de Peligro ----- */
 .btn-danger {
     background-color: #f44336;
     color: white;
@@ -93,8 +105,9 @@
     background-color: #da190b;
 }
 
+/* ----- Mensaje de Advertencia ----- */
 .warning {
     color: #f44336;
     font-weight: bold;
     margin: 10px 0;
-} 
+}

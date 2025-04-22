@@ -1,4 +1,4 @@
-/* Contenedor de Inicio de Sesión */
+/* ----- Contenedor de Inicio de Sesión ----- */
 .login-container {
   max-width: 480px;
   margin: 0 auto;
@@ -8,7 +8,7 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
-/* Título de Inicio de Sesión */
+/* ----- Título de Inicio de Sesión ----- */
 .login-title {
   font-size: 24px;
   margin-bottom: 30px;
@@ -16,43 +16,48 @@
   color: var(--primary);
 }
 
-/* Botón del Formulario de Inicio de Sesión */
+/* ----- Botón del Formulario de Inicio de Sesión ----- */
 .login-form .btn {
   width: 100%;
   justify-content: center;
   margin-top: 10px;
 }
 
-/* Pie de Página de Inicio de Sesión */
+/* ----- Pie de Página de Inicio de Sesión ----- */
 .login-footer {
   text-align: center;
   margin-top: 24px;
   color: var(--gray);
 }
 
+/* ----- Enlace en el Pie de Página de Inicio de Sesión ----- */
 .login-footer a {
   color: var(--primary);
   font-weight: 500;
 }
 
+/* ----- Hover para Enlace en el Pie de Página de Inicio de Sesión ----- */
 .login-footer a:hover {
   text-decoration: underline;
 }
 
-/* Animación de Inicio de Sesión */
+/* ----- Animación de Aparición ----- */
 .login-container {
   animation: fadeInUp 0.5s ease;
 }
 
+/* ----- Contenedor del Campo de Contraseña ----- */
 .password-input-container {
   position: relative;
   margin-bottom: 15px;
 }
 
+/* ----- Estilos para el Campo de Contraseña ----- */
 .password-input-container input {
   padding-right: 40px !important;
 }
 
+/* ----- Botón para Mostrar/Ocultar Contraseña ----- */
 .password-input-container .toggle-password {
   position: absolute;
   right: 10px;
@@ -64,14 +69,17 @@
   transition: color 0.3s ease;
 }
 
+/* ----- Hover para Botón de Contraseña ----- */
 .password-input-container .toggle-password:hover {
   color: var(--primary);
 }
 
+/* ----- Estilos para Contraseña Visible ----- */
 .password-input-container input[type="text"].password-visible {
   letter-spacing: 1px;
 }
 
+/* ----- Animaciones Keyframes ----- */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -83,7 +91,7 @@
   }
 }
 
-/* Consultas de Medios - Inicio de Sesión */
+/* ----- Consultas de Medios para Móviles ----- */
 @media (max-width: 576px) {
   .login-container {
     padding: 30px 20px;
