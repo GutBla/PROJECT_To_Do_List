@@ -1,3 +1,11 @@
+"""
+Aplicación Flask para Gestión de Tareas
+-------------------------------------------------------
+Aplicación completa para gestión de tareas con autenticación de usuarios,
+categorías, tareas compartidas y base de datos relacional.
+"""
+
+# Importaciones de librerías ----------------------
 from flask import Flask, jsonify, request, session, redirect, render_template
 from datetime import datetime
 from flask_wtf import CSRFProtect
@@ -7,21 +15,17 @@ from models import db, Tarea, UsuarioTarea, Usuario, CategoriaPredeterminada, Ca
 from database.triggers.trigger import create_trigger, drop_trigger
 from database.procedures.stored_procedure import create_stored_procedure, drop_stored_procedure, execute_stored_procedure
 
-# Configuración inicial de la aplicación Flask
-# ----------------------------------------------
+# Configuración inicial de la aplicación ----------------------
 app = Flask(__name__, static_folder='../frontend/static')
 app.config.from_object(Config)
 
-# Inicialización de CSRFProtect para proteger contra ataques CSRF
-# ------------------------------------------------
+# Protección CSRF ----------------------
 csrf = CSRFProtect(app)
 
-# Vinculación de la base de datos con la app
-# ------------------------------------------------
+# Configuración de base de datos ----------------------
 db.init_app(app)
 
-
-# Funciones de ayuda -------------------------------------
+# Funciones de ayuda ----------------------
 def validate_write_permission(tarea_id, usuario_id):
     if Tarea.query.get(tarea_id).usuario_id == usuario_id:
         return True
@@ -36,8 +40,7 @@ def validate_write_permission(tarea_id, usuario_id):
 def validate_task_owner(tarea_id, usuario_id):
     return Tarea.query.get(tarea_id).usuario_id == usuario_id
 
-# Inicialización de categorías predeterminadas
-# ------------------------------------------------
+# Inicialización de categorías predeterminadas ----------------------
 def initialize_default_categories():
     try:
         default_categories = [
@@ -61,8 +64,7 @@ def initialize_default_categories():
         print(f"Error inicializando categorías: {str(e)}")
         db.session.rollback()
 
-# Inicialización de la base de datos
-# ------------------------------------------------
+# Inicialización de la base de datos ----------------------
 with app.app_context():
     db.create_all()
     db.session.execute(db.text(drop_trigger()))
@@ -72,7 +74,7 @@ with app.app_context():
     db.session.commit()
     initialize_default_categories()
 
-# Rutas de autenticación ----------------------------------
+# Rutas de autenticación ----------------------
 @app.route('/')
 def home():
     if 'user_id' in session:
@@ -128,7 +130,7 @@ def logout():
     session.clear()
     return redirect('/login')
 
-# Rutas principales ---------------------------
+# Rutas principales ----------------------
 @app.route('/tareas')
 def tareas():
     if 'user_id' not in session:
@@ -139,8 +141,7 @@ def tareas():
     
     return render_template('tareas.html', usuario=usuario, categorias=categorias)
 
-
-# API Endpoints -------------------------------
+# API Endpoints ----------------------
 @csrf.exempt
 @app.route('/api/tareas', methods=['GET'])
 def get_tareas():
@@ -190,6 +191,7 @@ def get_tareas():
         'puede_eliminar': t.usuario_id == user_id
     } for t in tareas])
 
+# Creación de tareas ----------------------
 @app.route('/api/tareas', methods=['POST'])
 def create_tarea():
     if 'user_id' not in session:
@@ -221,6 +223,7 @@ def create_tarea():
         'mensaje': 'Tarea creada exitosamente'
     }), 201
 
+# Obtención de tarea específica ----------------------
 @csrf.exempt
 @app.route('/api/tareas/<int:tarea_id>', methods=['GET'])
 def get_tarea(tarea_id):
@@ -266,6 +269,7 @@ def get_tarea(tarea_id):
         } for ut in shared_users if ut.permisos != 'PROPIETARIO']
     })
 
+# Actualización de tareas ----------------------
 @app.route('/api/tareas/<int:tarea_id>', methods=['PUT'])
 def update_tarea(tarea_id):
     if 'user_id' not in session:
@@ -325,6 +329,7 @@ def update_tarea(tarea_id):
         }
     })
 
+# Eliminación de tareas ----------------------
 @app.route('/api/tareas/<int:tarea_id>', methods=['DELETE'])
 def delete_tarea(tarea_id):
     if 'user_id' not in session:
@@ -336,8 +341,6 @@ def delete_tarea(tarea_id):
         return jsonify({'error': 'Solo el propietario puede eliminar la tarea'}), 403
     
     try:
-        #Se elimina las relaciones de usuario_tarea asociadas a la tarea
-        # ---------------------
         relaciones = UsuarioTarea.query.filter_by(tarea_id=tarea_id).all()
         for relacion in relaciones:
             db.session.delete(relacion)
@@ -350,6 +353,7 @@ def delete_tarea(tarea_id):
         db.session.rollback()
         return jsonify({'error': 'Error al eliminar la tarea'}), 500
 
+# Gestión de categorías ----------------------
 @csrf.exempt
 @app.route('/api/categorias', methods=['GET'])
 def get_categorias():
@@ -364,6 +368,7 @@ def get_categorias():
         'descripcion': c.categoria_predeterminada.descripcion if c.categoria_predeterminada else None
     } for c in categorias])
 
+# Creación de categorías ----------------------
 @app.route('/api/categorias', methods=['POST'])
 def create_categoria():
     if 'user_id' not in session:
@@ -408,6 +413,7 @@ def create_categoria():
         db.session.rollback()
         return jsonify({'error': 'Error al crear la categoría', 'detalle': str(e)}), 500
 
+# Actualización de categorías ----------------------
 @app.route('/api/categorias/<int:categoria_id>', methods=['PUT'])
 def update_categoria(categoria_id):
     if 'user_id' not in session:
@@ -425,13 +431,11 @@ def update_categoria(categoria_id):
         return jsonify({'error': 'El nombre no puede exceder los 255 caracteres'}), 400
     
     try:
-        # Obtener o crear la categoría predeterminada asociada
         cat_pred = categoria.categoria_predeterminada
         if cat_pred:
             cat_pred.nombre = data['nombre']
             cat_pred.descripcion = data.get('descripcion', cat_pred.descripcion)
         else:
-            # Si no existe, crear una nueva categoría predeterminada
             nueva_predeterminada = CategoriaPredeterminada(
                 nombre=data['nombre'],
                 descripcion=data.get('descripcion')
@@ -452,6 +456,7 @@ def update_categoria(categoria_id):
         db.session.rollback()
         return jsonify({'error': 'Error al actualizar la categoría', 'detalle': str(e)}), 500
 
+# Eliminación de categorías ----------------------
 @app.route('/api/categorias/<int:categoria_id>', methods=['DELETE'])
 def delete_categoria(categoria_id):
     if 'user_id' not in session:
@@ -462,13 +467,10 @@ def delete_categoria(categoria_id):
         return jsonify({'error': 'Categoría no encontrada o no tienes permisos para eliminarla'}), 404
     
     try:
-        # Actualizar tareas que tengan esta categoría
         Tarea.query.filter_by(categoria_id=categoria_id).update({'categoria_id': None})
         
-        # Eliminar la categoría
         db.session.delete(categoria)
         
-        # Si la categoría predeterminada asociada no es usada por otras categorías, eliminarla también
         if categoria.categoria_predeterminada_id:
             otras_categorias = Categoria.query.filter_by(
                 categoria_predeterminada_id=categoria.categoria_predeterminada_id
@@ -489,6 +491,7 @@ def delete_categoria(categoria_id):
         db.session.rollback()
         return jsonify({'error': 'Error al eliminar la categoría', 'detalle': str(e)}), 500
 
+# Compartir tareas ----------------------
 @app.route('/api/tareas/<int:tarea_id>/compartir', methods=['POST'])
 def compartir_tarea(tarea_id):
     if 'user_id' not in session:
@@ -505,13 +508,11 @@ def compartir_tarea(tarea_id):
         if not email:
             return jsonify({'error': 'El email es requerido'}), 400
         
-        # Validar permisos
         if permisos not in ['LECTURA', 'ESCRITURA']:
             return jsonify({'error': 'Permisos inválidos. Use LECTURA o ESCRITURA'}), 400
         
         tarea = Tarea.query.get_or_404(tarea_id)
         
-        # Verificar que el usuario es el propietario
         if tarea.usuario_id != session['user_id']:
             return jsonify({'error': 'Solo el propietario puede compartir la tarea'}), 403
         
@@ -519,11 +520,9 @@ def compartir_tarea(tarea_id):
         if not usuario:
             return jsonify({'error': 'Usuario no encontrado'}), 404
         
-        # Evitar auto-compartir
         if usuario.id == session['user_id']:
             return jsonify({'error': 'No puedes compartir la tarea contigo mismo'}), 400
         
-        # Verificar si ya está compartida
         existente = UsuarioTarea.query.filter_by(
             usuario_id=usuario.id,
             tarea_id=tarea_id
@@ -532,7 +531,6 @@ def compartir_tarea(tarea_id):
         if existente:
             return jsonify({'error': 'La tarea ya está compartida con este usuario'}), 400
         
-        # Crear el nuevo permiso
         nuevo_permiso = UsuarioTarea(
             usuario_id=usuario.id,
             tarea_id=tarea_id,
@@ -554,9 +552,9 @@ def compartir_tarea(tarea_id):
         
     except Exception as e:
         db.session.rollback()
-        print(f"Error al compartir tarea: {str(e)}")
         return jsonify({'error': 'Error interno al compartir la tarea'}), 500
 
+# Gestión de permisos ----------------------
 @app.route('/api/tareas/<int:tarea_id>/permisos', methods=['PUT'])
 def actualizar_permisos(tarea_id):
     if 'user_id' not in session:
@@ -573,20 +571,16 @@ def actualizar_permisos(tarea_id):
         if not usuario_id or not nuevos_permisos:
             return jsonify({'error': 'Datos incompletos'}), 400
         
-        # Validar que los permisos sean válidos
         if nuevos_permisos not in ['LECTURA', 'ESCRITURA']:
             return jsonify({'error': 'Permisos inválidos. Solo se permite LECTURA o ESCRITURA'}), 400
         
-        # Verificar que la tarea existe y el usuario es el propietario
         tarea = Tarea.query.get_or_404(tarea_id)
         if tarea.usuario_id != session['user_id']:
             return jsonify({'error': 'Solo el propietario puede modificar permisos'}), 403
         
-        # Verificar que no es el propietario intentando modificarse a sí mismo
         if usuario_id == session['user_id']:
             return jsonify({'error': 'No puedes modificar tus propios permisos'}), 400
         
-        # Buscar el permiso existente
         permiso = UsuarioTarea.query.filter_by(
             usuario_id=usuario_id,
             tarea_id=tarea_id
@@ -595,7 +589,6 @@ def actualizar_permisos(tarea_id):
         if not permiso:
             return jsonify({'error': 'El usuario no tiene acceso a esta tarea'}), 404
         
-        # Actualizar permisos
         permiso.permisos = nuevos_permisos
         db.session.commit()
         
@@ -606,9 +599,9 @@ def actualizar_permisos(tarea_id):
         
     except Exception as e:
         db.session.rollback()
-        print(f"Error al actualizar permisos: {str(e)}")
         return jsonify({'error': 'Error interno al actualizar permisos'}), 500
-    
+
+# Eliminación de permisos ----------------------
 @app.route('/api/tareas/<int:tarea_id>/permisos', methods=['DELETE'])
 def eliminar_permisos(tarea_id):
     if 'user_id' not in session:
@@ -623,16 +616,13 @@ def eliminar_permisos(tarea_id):
         if not usuario_id:
             return jsonify({'error': 'ID de usuario no proporcionado'}), 400
         
-        # Verificar que la tarea existe y el usuario es el propietario
         tarea = Tarea.query.get_or_404(tarea_id)
         if tarea.usuario_id != session['user_id']:
             return jsonify({'error': 'Solo el propietario puede eliminar permisos'}), 403
         
-        # Verificar que no es el propietario intentando eliminarse a sí mismo
         if usuario_id == session['user_id']:
             return jsonify({'error': 'No puedes eliminar tus propios permisos'}), 400
         
-        # Buscar y eliminar el permiso
         permiso = UsuarioTarea.query.filter_by(
             usuario_id=usuario_id,
             tarea_id=tarea_id
@@ -651,9 +641,9 @@ def eliminar_permisos(tarea_id):
         
     except Exception as e:
         db.session.rollback()
-        print(f"Error al eliminar permisos: {str(e)}")
         return jsonify({'error': 'Error interno al eliminar permisos'}), 500
 
+# Inicialización de categorías predeterminadas ----------------------
 with app.app_context():
     if not CategoriaPredeterminada.query.first():
         categorias_pred = [
@@ -671,5 +661,6 @@ with app.app_context():
         db.session.commit()
         print("Categorías predeterminadas creadas exitosamente")
 
+# Ejecución de la aplicación ----------------------
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,3 +1,11 @@
+"""
+Triggers para Registro de Tareas Eliminadas
+-------------------------------------------------------
+Contiene funciones para crear y eliminar un trigger que registra
+automáticamente en un log las tareas eliminadas del sistema.
+"""
+
+# Crear trigger de registro ----------------------
 def create_trigger():
     script_sql = """
     CREATE TRIGGER trigger_log_tarea_eliminada
@@ -26,6 +34,7 @@ def create_trigger():
     """
     return script_sql
 
+# Eliminar trigger de registro ----------------------
 def drop_trigger():
     script_sql = """
     DROP TRIGGER IF EXISTS trigger_log_tarea_eliminada;

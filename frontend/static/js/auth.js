@@ -1,6 +1,6 @@
 /**
- * Valida el formulario de login antes del envío
- * @param {Event} event - Evento submit del formulario
+ * Validación del Formulario de Login
+ * ------------------------------------------------------- 
  */
 function validateLoginForm(event) {
     const form = event.target;
@@ -8,7 +8,6 @@ function validateLoginForm(event) {
     const password = form.password.value.trim();
     let isValid = true;
 
-    // Validación del campo email
     if (!email) {
         showError('email', 'El email es requerido');
         isValid = false;
@@ -19,7 +18,6 @@ function validateLoginForm(event) {
         clearError('email');
     }
 
-    // Validación del campo contraseña
     if (!password) {
         showError('password', 'La contraseña es requerida');
         isValid = false;
@@ -30,15 +28,14 @@ function validateLoginForm(event) {
         clearError('password');
     }
 
-    // Previene el envío si hay errores
     if (!isValid) {
         event.preventDefault();
     }
 }
 
 /**
- * Valida el formulario de registro antes del envío
- * @param {Event} event - Evento submit del formulario
+ * Validación del Formulario de Registro
+ * ------------------------------------------------------- 
  */
 function validateRegisterForm(event) {
     const form = event.target;
@@ -47,7 +44,6 @@ function validateRegisterForm(event) {
     const password = form.password.value.trim();
     let isValid = true;
 
-    // Validación del campo nombre
     if (!nombre) {
         showError('nombre', 'El nombre es requerido');
         isValid = false;
@@ -55,7 +51,6 @@ function validateRegisterForm(event) {
         clearError('nombre');
     }
 
-    // Validación del campo email
     if (!email) {
         showError('email', 'El email es requerido');
         isValid = false;
@@ -66,7 +61,6 @@ function validateRegisterForm(event) {
         clearError('email');
     }
 
-    // Validación del campo contraseña
     if (!password) {
         showError('password', 'La contraseña es requerida');
         isValid = false;
@@ -77,16 +71,14 @@ function validateRegisterForm(event) {
         clearError('password');
     }
 
-    // Previene el envío si hay errores
     if (!isValid) {
         event.preventDefault();
     }
 }
 
 /**
- * Valida si un email tiene formato válido
- * @param {string} email - Email a validar
- * @returns {boolean} True si el email es válido
+ * Validación de un Email Válido
+ * ------------------------------------------------------- 
  */
 function isValidEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -94,9 +86,8 @@ function isValidEmail(email) {
 }
 
 /**
- * Muestra un mensaje de error para un campo del formulario
- * @param {string} fieldId - ID del campo con error
- * @param {string} message - Mensaje de error a mostrar
+ * Mostrar Mensaje de Error en el Formulario
+ * ------------------------------------------------------- 
  */
 function showError(fieldId, message) {
     const field = document.getElementById(fieldId);
@@ -106,10 +97,8 @@ function showError(fieldId, message) {
 }
 
 /**
- * Crea un elemento para mostrar mensajes de error
- * @param {HTMLElement} field - Campo de formulario
- * @param {string} fieldId - ID del campo
- * @returns {HTMLElement} Elemento creado para mostrar errores
+ * Crear Elemento para Mostrar Errores
+ * ------------------------------------------------------- 
  */
 function createErrorElement(field, fieldId) {
     const errorElement = document.createElement('div');
@@ -120,8 +109,8 @@ function createErrorElement(field, fieldId) {
 }
 
 /**
- * Limpia los errores de un campo del formulario
- * @param {string} fieldId - ID del campo a limpiar
+ * Limpiar Errores en el Formulario
+ * ------------------------------------------------------- 
  */
 function clearError(fieldId) {
     const errorElement = document.getElementById(`${fieldId}-error`);
@@ -137,7 +126,8 @@ function clearError(fieldId) {
 }
 
 /**
- * Inicializa los event listeners para los formularios de autenticación
+ * Inicializar Formularios de Autenticación
+ * ------------------------------------------------------- 
  */
 function initAuthForms() {
     const loginForm = document.getElementById('loginForm');
@@ -153,8 +143,8 @@ function initAuthForms() {
 }
 
 /**
- * Alterna entre mostrar y ocultar la contraseña
- * @param {string} fieldId - ID del campo de contraseña
+ * Alternar Visibilidad de la Contraseña
+ * ------------------------------------------------------- 
  */
 function togglePassword(fieldId) {
     const passwordField = document.getElementById(fieldId);
@@ -165,7 +155,6 @@ function togglePassword(fieldId) {
       passwordField.type = "text";
       passwordField.classList.add('password-visible');
       toggleIcon.textContent = "visibility";
-      // Ocultar después de 3 segundos
       setTimeout(() => {
         passwordField.type = "password";
         passwordField.classList.remove('password-visible');
@@ -176,16 +165,19 @@ function togglePassword(fieldId) {
       passwordField.classList.remove('password-visible');
       toggleIcon.textContent = "visibility_off";
     }
-  }
-  
-  document.addEventListener('DOMContentLoaded', function() {
+}
+
+/**
+ * Configuración de los Event Listeners en el DOM
+ * ------------------------------------------------------- 
+ */
+document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.toggle-password').forEach(icon => {
       icon.addEventListener('click', function() {
         const fieldId = this.closest('.form-group').querySelector('input').id;
         togglePassword(fieldId);
       });
     });
-  });
+});
 
-// Inicializa los formularios cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', initAuthForms);

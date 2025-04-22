@@ -1,8 +1,11 @@
 /**
- * Inicializa la aplicación cuando el DOM está completamente cargado
+ *  Gestión de Tareas - Aplicación Kanban 
+ * ------------------------------------------------------- 
+ * Inicializa y gestiona toda la funcionalidad del tablero Kanban de tareas,
+ * incluyendo creación, edición, eliminación, filtrado, drag & drop,
+ * compartir tareas y gestión de categorías.
  */
 document.addEventListener("DOMContentLoaded", function () {
-    // Elementos del DOM
     const newTaskBtn = document.getElementById("newTaskBtn");
     const taskModal = document.getElementById("taskModal");
     const closeModal = document.getElementById("closeModal");
@@ -12,23 +15,22 @@ document.addEventListener("DOMContentLoaded", function () {
     const taskIdInput = document.getElementById("taskId");
     const kanbanBoard = document.getElementById("kanbanBoard");
 
-    // Constantes y variables de estado
     const statuses = ["NUEVA", "PENDIENTE", "EN_PROGRESO", "COMPLETADA"];
     let currentCategoryFilter = null;
     let currentSharedTaskId = null;
 
-    // Carga inicial de tareas
     loadTasks();
 
-    // Event Listeners
     newTaskBtn.addEventListener("click", () => openTaskModal());
     closeModal.addEventListener("click", closeTaskModal);
     cancelTaskBtn.addEventListener("click", closeTaskModal);
     taskForm.addEventListener("submit", handleFormSubmit);
 
     /**
-     * Abre el modal de tarea para crear o editar
-     * @param {number|null} taskId - ID de la tarea a editar (null para nueva tarea)
+     *  Apertura y Configuración del Modal de Tareas 
+     * ------------------------------------------------------- 
+     * Gestiona la apertura del modal para crear/editar tareas,
+     * configurando los campos según sea necesario.
      */
     function openTaskModal(taskId = null) {
         if (taskId) {
@@ -43,16 +45,15 @@ document.addEventListener("DOMContentLoaded", function () {
         taskModal.classList.add("active");
     }
 
-    /**
-     * Cierra el modal de tarea
-     */
     function closeTaskModal() {
         taskModal.classList.remove("active");
     }
 
     /**
-     * Obtiene los detalles de una tarea específica
-     * @param {number} taskId - ID de la tarea
+     *  Obtención de Detalles de Tarea 
+     * ------------------------------------------------------- 
+     * Realiza una petición al servidor para obtener los detalles
+     * completos de una tarea específica.
      */
     function fetchTaskDetails(taskId) {
         apiFetch(`/api/tareas/${taskId}`)
@@ -75,8 +76,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     /**
-     * Maneja el envío del formulario de tarea
-     * @param {Event} e - Evento submit
+     *  Manejo del Envío de Formulario de Tarea 
+     * ------------------------------------------------------- 
+     * Procesa el formulario de tarea, enviando los datos al servidor
+     * según sea creación o actualización.
      */
     function handleFormSubmit(e) {
         e.preventDefault();
@@ -94,15 +97,13 @@ document.addEventListener("DOMContentLoaded", function () {
             categoria_id: document.getElementById("taskCategory").value || null,
         };
 
-        // Obtener el token CSRF del meta tag
         const csrfToken = document
             .querySelector('meta[name="csrf-token"]')
             .getAttribute("content");
 
-        // Configuración de la solicitud
         const headers = {
             "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken, // Agregar el token CSRF aquí
+            "X-CSRFToken": csrfToken,
         };
 
         const body = JSON.stringify(taskData);
@@ -125,7 +126,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     /**
-     * Carga las tareas desde el servidor
+     *  Carga y Visualización de Tareas 
+     * ------------------------------------------------------- 
+     * Obtiene las tareas del servidor y las renderiza en el tablero Kanban,
+     * aplicando filtros si es necesario.
      */
     function loadTasks() {
         const params = new URLSearchParams();
@@ -142,8 +146,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     /**
-     * Renderiza el tablero Kanban con las tareas
-     * @param {Array} tasks - Lista de tareas
+     *  Renderizado del Tablero Kanban 
+     * ------------------------------------------------------- 
+     * Construye dinámicamente el tablero Kanban con columnas para cada estado
+     * y las tarjetas de tareas correspondientes.
      */
     function renderKanbanBoard(tasks) {
         kanbanBoard.innerHTML = '';
@@ -174,7 +180,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     
-
         if (tasks.length === 0) {
             const emptyMessage = document.createElement('div');
             emptyMessage.className = 'empty-kanban-container';
@@ -189,9 +194,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     /**
-     * Crea una tarjeta de tarea para el tablero Kanban
-     * @param {Object} task - Objeto de tarea
-     * @returns {HTMLElement} Elemento HTML de la tarjeta
+     *  Creación de Tarjetas de Tarea 
+     * ------------------------------------------------------- 
+     * Genera el HTML para cada tarjeta de tarea con toda su información
+     * y controles interactivos.
      */
     function createTaskCard(task) {
         const taskCard = document.createElement("div");
@@ -209,95 +215,64 @@ document.addEventListener("DOMContentLoaded", function () {
         if (dueDate) {
             const isOverdue = dueDate <= today && task.estado !== "COMPLETADA";
             dueDateInfo = `
-        <div class="task-card-due ${isOverdue ? "overdue" : ""}">
-          <i class="material-icons" style="font-size:14px;">event</i>
-          ${dueDate.toLocaleDateString()} ${isOverdue ? " (Vencida)" : ""}
-        </div>
-      `;
+                <div class="task-card-due ${isOverdue ? "overdue" : ""}">
+                    <i class="material-icons" style="font-size:14px;">event</i>
+                    ${dueDate.toLocaleDateString()} ${isOverdue ? " (Vencida)" : ""}
+                </div>
+            `;
         }
 
         taskCard.innerHTML = `
-    <div class="task-card-header">
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <label class="custom-checkbox">
-          <input type="checkbox" 
-                ${task.estado === "COMPLETADA" ? "checked" : ""}
-                onchange="toggleTaskCompletion(${task.id}, this.checked)">
-          <span class="checkmark"></span>
-        </label>
-        <h3 class="task-card-title">${escapeHtml(task.titulo)}</h3>
-      </div>
-      <span class="task-card-status">${task.estado.replace("_", " ")}</span>
-    </div>
-      ${
-          task.descripcion
-              ? `<p style="font-size:14px;margin:5px 0;">${escapeHtml(
-                    task.descripcion
-                )}</p>`
-              : ""
-      }
-      ${dueDateInfo}
-      ${
-          task.categoria_nombre
-              ? `
-        <div class="task-card-category">
-          <i class="material-icons" style="font-size:14px;">${getCategoryIcon(
-              task.categoria_nombre
-          )}</i>
-          ${escapeHtml(task.categoria_nombre)}
-        </div>
-      `
-              : ""
-      }
-      <div class="task-card-actions">
-        <div class="task-card-dropdown">
-          <select onchange="updateTaskStatus(${task.id}, this.value)" 
-            ${task.puede_editar ? "" : "disabled"}>
-            <option value="NUEVA" ${
-                task.estado === "NUEVA" ? "selected" : ""
-            }>Nueva</option>
-            <option value="EN_PROGRESO" ${
-                task.estado === "EN_PROGRESO" ? "selected" : ""
-            }>En Progreso</option>
-            <option value="PENDIENTE" ${
-                task.estado === "PENDIENTE" ? "selected" : ""
-            }>Pendiente</option>
-            <option value="COMPLETADA" ${
-                task.estado === "COMPLETADA" ? "selected" : ""
-            }>Completada</option>
-          </select>
-        </div>
-        <div style="display: flex; align-items: center; gap: 8px;">
-     </div>
-        <div class="task-card-buttons">
-          ${
-              task.puede_editar
-                  ? `
-            <button class="task-card-button" onclick="event.stopPropagation(); editTask(${task.id})">
-              <i class="material-icons" style="font-size:18px;">edit</i>
-            </button>
-          `
-                  : ""
-          }
-          ${
-              task.puede_eliminar
-                  ? `<button class="task-card-button" onclick="event.stopPropagation(); deleteTask(${task.id}, '${escapeHtml(task.titulo)}')">
-               <i class="material-icons" style="font-size:18px;">delete</i>
-            </button>`
-                  : ""
-          }
-          ${
-              task.es_propia
-                  ? `
-            <button class="task-card-button" onclick="event.stopPropagation(); openShareModal(${task.id})">
-              <i class="material-icons" style="font-size:18px;">share</i>
-            </button>
-          `
-                  : ""
-          }
-        </div>
-      </div>
-    `;
+            <div class="task-card-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <label class="custom-checkbox">
+                        <input type="checkbox" 
+                            ${task.estado === "COMPLETADA" ? "checked" : ""}
+                            onchange="toggleTaskCompletion(${task.id}, this.checked)">
+                        <span class="checkmark"></span>
+                    </label>
+                    <h3 class="task-card-title">${escapeHtml(task.titulo)}</h3>
+                </div>
+                <span class="task-card-status">${task.estado.replace("_", " ")}</span>
+            </div>
+            ${task.descripcion ? `<p style="font-size:14px;margin:5px 0;">${escapeHtml(task.descripcion)}</p>` : ""}
+            ${dueDateInfo}
+            ${task.categoria_nombre ? `
+                <div class="task-card-category">
+                    <i class="material-icons" style="font-size:14px;">${getCategoryIcon(task.categoria_nombre)}</i>
+                    ${escapeHtml(task.categoria_nombre)}
+                </div>
+            ` : ""}
+            <div class="task-card-actions">
+                <div class="task-card-dropdown">
+                    <select onchange="updateTaskStatus(${task.id}, this.value)" 
+                        ${task.puede_editar ? "" : "disabled"}>
+                        <option value="NUEVA" ${task.estado === "NUEVA" ? "selected" : ""}>Nueva</option>
+                        <option value="EN_PROGRESO" ${task.estado === "EN_PROGRESO" ? "selected" : ""}>En Progreso</option>
+                        <option value="PENDIENTE" ${task.estado === "PENDIENTE" ? "selected" : ""}>Pendiente</option>
+                        <option value="COMPLETADA" ${task.estado === "COMPLETADA" ? "selected" : ""}>Completada</option>
+                    </select>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;"></div>
+                <div class="task-card-buttons">
+                    ${task.puede_editar ? `
+                        <button class="task-card-button" onclick="event.stopPropagation(); editTask(${task.id})">
+                            <i class="material-icons" style="font-size:18px;">edit</i>
+                        </button>
+                    ` : ""}
+                    ${task.puede_eliminar ? `
+                        <button class="task-card-button" onclick="event.stopPropagation(); deleteTask(${task.id}, '${escapeHtml(task.titulo)}')">
+                            <i class="material-icons" style="font-size:18px;">delete</i>
+                        </button>
+                    ` : ""}
+                    ${task.es_propia ? `
+                        <button class="task-card-button" onclick="event.stopPropagation(); openShareModal(${task.id})">
+                            <i class="material-icons" style="font-size:18px;">share</i>
+                        </button>
+                    ` : ""}
+                </div>
+            </div>
+        `;
 
         taskCard.addEventListener("dragstart", handleDragStart);
         taskCard.addEventListener("dragend", handleDragEnd);
@@ -305,10 +280,11 @@ document.addEventListener("DOMContentLoaded", function () {
         return taskCard;
     }
 
-    // Funciones de Drag and Drop
     /**
-     * Configura los eventos de drag and drop para un contenedor
-     * @param {HTMLElement} container - Contenedor de tareas
+     *  Funcionalidad de Drag and Drop 
+     * ------------------------------------------------------- 
+     * Implementa el comportamiento para arrastrar y soltar tarjetas
+     * entre columnas del tablero Kanban.
      */
     function setupDragAndDrop(container) {
         container.addEventListener("dragover", handleDragOver);
@@ -355,39 +331,32 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Funciones utilitarias
     /**
-     * Obtiene el ícono correspondiente a una categoría
-     * @param {string} categoryName - Nombre de la categoría
-     * @returns {string} Nombre del ícono
+     *  Funciones Utilitarias 
+     * ------------------------------------------------------- 
+     * Contiene funciones auxiliares para iconos, escape de HTML
+     * y otras operaciones comunes.
      */
     function getCategoryIcon(categoryName) {
         if (!categoryName) return "category";
-        return (
-            {
-                Trabajo: "work",
-                Personal: "home",
-                Estudio: "school",
-            }[categoryName] || "category"
-        );
+        return {
+            Trabajo: "work",
+            Personal: "home",
+            Estudio: "school",
+        }[categoryName] || "category";
     }
 
-    /**
-     * Escapa texto para prevenir XSS
-     * @param {string} text - Texto a escapar
-     * @returns {string} Texto escapado
-     */
     function escapeHtml(text) {
         const div = document.createElement("div");
         div.textContent = text;
         return div.innerHTML;
     }
 
-    // Funciones de categorías
     /**
-     * Filtra tareas por categoría
-     * @param {HTMLElement} element - Elemento de categoría clickeado
-     * @param {number} categoryId - ID de la categoría
+     *  Gestión de Categorías 
+     * ------------------------------------------------------- 
+     * Maneja el filtrado, creación, edición y eliminación
+     * de categorías de tareas.
      */
     function filterTasksByCategory(element, categoryId) {
         document
@@ -407,10 +376,6 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("categoryForm").reset();
     }
 
-    /**
-     * Crea una nueva categoría
-     * @param {Event} event - Evento submit
-     */
     function createNewCategory(event) {
         event.preventDefault();
 
@@ -419,12 +384,10 @@ document.addEventListener("DOMContentLoaded", function () {
             descripcion: document.getElementById("categoryDescription").value,
         };
 
-        // Obtener el token CSRF del meta tag
         const csrfToken = document
             .querySelector('meta[name="csrf-token"]')
             .getAttribute("content");
 
-        // Configuración de la solicitud
         const headers = {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
@@ -444,10 +407,11 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    // Funciones de compartir tareas
     /**
-     * Abre el modal para compartir tarea
-     * @param {number} taskId - ID de la tarea
+     *  Compartir Tareas 
+     * ------------------------------------------------------- 
+     * Implementa la funcionalidad para compartir tareas con otros usuarios,
+     * gestionar permisos y visualizar usuarios con acceso.
      */
     function openShareModal(taskId) {
         currentSharedTaskId = taskId;
@@ -463,10 +427,6 @@ document.addEventListener("DOMContentLoaded", function () {
         currentSharedTaskId = null;
     }
 
-    /**
-     * Maneja el envío del formulario para compartir tarea
-     * @param {Event} event - Evento submit
-     */
     function handleShareSubmit(event) {
         event.preventDefault();
 
@@ -513,7 +473,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then((response) => {
                 showNotification("Tarea compartida exitosamente", "success");
                 closeShareModal();
-                loadSharedUsers(taskId); // Recargar la lista de usuarios compartidos
+                loadSharedUsers(taskId);
             })
             .catch((error) => {
                 console.error("Error al compartir tarea:", error);
@@ -527,73 +487,42 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    /**
-     * Carga los usuarios con acceso a una tarea
-     * @param {number} taskId - ID de la tarea
-     */
     function loadSharedUsers(taskId) {
         apiFetch(`/api/tareas/${taskId}`)
             .then((task) => {
-                const container = document.getElementById(
-                    "sharedUsersContainer"
-                );
+                const container = document.getElementById("sharedUsersContainer");
                 container.innerHTML = "";
 
                 const ownerItem = document.createElement("div");
                 ownerItem.className = "shared-user-item owner";
                 ownerItem.innerHTML = `
-                <div class="shared-user-info">
-                    <span class="shared-user-email">${escapeHtml(
-                        task.propietario.email
-                    )}</span>
-                    <span class="shared-user-permissions">(Propietario)</span>
-                </div>
-                <div class="shared-user-actions">
-                    <span class="owner-badge">Dueño</span>
-                </div>
-            `;
+                    <div class="shared-user-info">
+                        <span class="shared-user-email">${escapeHtml(task.propietario.email)}</span>
+                        <span class="shared-user-permissions">(Propietario)</span>
+                    </div>
+                    <div class="shared-user-actions">
+                        <span class="owner-badge">Dueño</span>
+                    </div>
+                `;
                 container.appendChild(ownerItem);
 
-                if (
-                    task.usuarios_compartidos &&
-                    task.usuarios_compartidos.length > 0
-                ) {
+                if (task.usuarios_compartidos && task.usuarios_compartidos.length > 0) {
                     task.usuarios_compartidos.forEach((user) => {
                         const userItem = document.createElement("div");
                         userItem.className = "shared-user-item";
                         userItem.innerHTML = `
                             <div class="shared-user-info">
-                                <span class="shared-user-email">${escapeHtml(
-                                    user.usuario.email
-                                )}</span>
-                                <span class="shared-user-permissions">(${getPermissionText(
-                                    user.permisos
-                                )})</span>
+                                <span class="shared-user-email">${escapeHtml(user.usuario.email)}</span>
+                                <span class="shared-user-permissions">(${getPermissionText(user.permisos)})</span>
                             </div>
                             <div class="shared-user-actions">
                                 <select class="permission-select" 
-                                    onchange="updateUserPermission(${taskId}, ${
-                            user.usuario_id
-                        }, this.value)"
-                                    ${
-                                        user.permisos === "PROPIETARIO"
-                                            ? "disabled"
-                                            : ""
-                                    }>
-                                    <option value="LECTURA" ${
-                                        user.permisos === "LECTURA"
-                                            ? "selected"
-                                            : ""
-                                    }>Lectura</option>
-                                    <option value="ESCRITURA" ${
-                                        user.permisos === "ESCRITURA"
-                                            ? "selected"
-                                            : ""
-                                    }>Escritura</option>
+                                    onchange="updateUserPermission(${taskId}, ${user.usuario_id}, this.value)"
+                                    ${user.permisos === "PROPIETARIO" ? "disabled" : ""}>
+                                    <option value="LECTURA" ${user.permisos === "LECTURA" ? "selected" : ""}>Lectura</option>
+                                    <option value="ESCRITURA" ${user.permisos === "ESCRITURA" ? "selected" : ""}>Escritura</option>
                                 </select>
-                                <button onclick="removeUserPermission(${taskId}, ${
-                            user.usuario_id
-                        })">
+                                <button onclick="removeUserPermission(${taskId}, ${user.usuario_id})">
                                     <i class="material-icons">delete</i>
                                 </button>
                             </div>
@@ -612,29 +541,17 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch((error) => {
                 console.error("Error al cargar usuarios compartidos:", error);
-                showNotification(
-                    "Error al cargar usuarios con acceso",
-                    "error"
-                );
+                showNotification("Error al cargar usuarios con acceso", "error");
             });
     }
 
-    /**
-     * Actualiza los permisos de un usuario sobre una tarea
-     * @param {number} taskId - ID de la tarea
-     * @param {number} userId - ID del usuario
-     * @param {string} newPermission - Nuevo nivel de permiso
-     */
     function updateUserPermission(taskId, userId, newPermission) {
         const csrfToken = document
             .querySelector('meta[name="csrf-token"]')
             .getAttribute("content");
 
         if (!["LECTURA", "ESCRITURA"].includes(newPermission)) {
-            showNotification(
-                "Permiso inválido. Solo se permite LECTURA o ESCRITURA",
-                "error"
-            );
+            showNotification("Permiso inválido. Solo se permite LECTURA o ESCRITURA", "error");
             return;
         }
 
@@ -650,26 +567,17 @@ document.addEventListener("DOMContentLoaded", function () {
             }),
         })
             .then(() => {
-                showNotification(
-                    "Permisos actualizados correctamente",
-                    "success"
-                );
+                showNotification("Permisos actualizados correctamente", "success");
                 loadSharedUsers(taskId);
             })
             .catch((error) => {
                 console.error("Error al actualizar permisos:", error);
-                const errorMsg =
-                    error.details?.error || "Error al actualizar permisos";
+                const errorMsg = error.details?.error || "Error al actualizar permisos";
                 showNotification(errorMsg, "error");
                 loadSharedUsers(taskId);
             });
     }
 
-    /**
-     * Elimina los permisos de un usuario sobre una tarea
-     * @param {number} taskId - ID de la tarea
-     * @param {number} userId - ID del usuario
-     */
     function removeUserPermission(taskId, userId) {
         if (!confirm("¿Estás seguro de eliminar el acceso de este usuario?")) {
             return;
@@ -695,36 +603,26 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch((error) => {
                 console.error("Error al eliminar permisos:", error);
-                const errorMsg =
-                    error.details?.error || "Error al eliminar acceso";
+                const errorMsg = error.details?.error || "Error al eliminar acceso";
                 showNotification(errorMsg, "error");
                 loadSharedUsers(taskId);
             });
     }
 
-    /**
-     * Obtiene el texto descriptivo de un permiso
-     * @param {string} permiso - Código del permiso
-     * @returns {string} Texto descriptivo
-     */
     function getPermissionText(permiso) {
         switch (permiso) {
-            case "LECTURA":
-                return "Lectura";
-            case "ESCRITURA":
-                return "Escritura";
-            case "PROPIETARIO":
-                return "Propietario";
-            default:
-                return permiso;
+            case "LECTURA": return "Lectura";
+            case "ESCRITURA": return "Escritura";
+            case "PROPIETARIO": return "Propietario";
+            default: return permiso;
         }
     }
 
     /**
-     * Abre el modal para editar una categoría
-     * @param {number} categoryId - ID de la categoría
-     * @param {string} name - Nombre actual de la categoría
-     * @param {string} description - Descripción actual de la categoría
+     *  Gestión de Categorías (Edición/Eliminación) 
+     * ------------------------------------------------------- 
+     * Maneja las operaciones avanzadas de categorías como edición
+     * y eliminación con confirmación.
      */
     function openEditCategoryModal(categoryId, name, description) {
         document.getElementById("editCategoryId").value = categoryId;
@@ -733,34 +631,24 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("editCategoryModal").classList.add("active");
     }
 
-    /**
-     * Cierra el modal de edición de categoría
-     */
     function closeEditCategoryModal() {
         document.getElementById("editCategoryModal").classList.remove("active");
         document.getElementById("editCategoryForm").reset();
     }
 
-    /**
-     * Actualiza una categoría existente
-     * @param {Event} event - Evento submit
-     */
     function updateCategory(event) {
         event.preventDefault();
 
         const categoryId = document.getElementById("editCategoryId").value;
         const categoryData = {
             nombre: document.getElementById("editCategoryName").value,
-            descripcion: document.getElementById("editCategoryDescription")
-                .value,
+            descripcion: document.getElementById("editCategoryDescription").value,
         };
 
-        // Obtener el token CSRF del meta tag
         const csrfToken = document
             .querySelector('meta[name="csrf-token"]')
             .getAttribute("content");
 
-        // Configuración de la solicitud
         const headers = {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
@@ -774,10 +662,7 @@ document.addEventListener("DOMContentLoaded", function () {
             headers,
         })
             .then(() => {
-                showNotification(
-                    "Categoría actualizada correctamente",
-                    "success"
-                );
+                showNotification("Categoría actualizada correctamente", "success");
                 closeEditCategoryModal();
                 window.location.reload();
             })
@@ -792,11 +677,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    /**
-     * Muestra modal de confirmación para eliminar una categoría
-     * @param {number} categoryId - ID de la categoría
-     * @param {string} categoryName - Nombre de la categoría
-     */
     function confirmDeleteCategory(categoryId, categoryName) {
         const confirmMessage = document.getElementById("confirmDeleteMessage");
         confirmMessage.textContent = `¿Estás seguro de que deseas eliminar la categoría "${categoryName}"?`;
@@ -807,26 +687,15 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("confirmDeleteModal").classList.add("active");
     }
 
-    /**
-     * Cierra el modal de confirmación de eliminación
-     */
     function closeConfirmDeleteModal() {
-        document
-            .getElementById("confirmDeleteModal")
-            .classList.remove("active");
+        document.getElementById("confirmDeleteModal").classList.remove("active");
     }
 
-    /**
-     * Elimina una categoría
-     * @param {number} categoryId - ID de la categoría
-     */
     function deleteCategory(categoryId) {
-        // Obtener el token CSRF del meta tag
         const csrfToken = document
             .querySelector('meta[name="csrf-token"]')
             .getAttribute("content");
 
-        // Configuración de la solicitud
         const headers = {
             "Content-Type": "application/json",
             "X-CSRFToken": csrfToken,
@@ -834,10 +703,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         apiFetch(`/api/categorias/${categoryId}`, { method: "DELETE", headers })
             .then(() => {
-                showNotification(
-                    "Categoría eliminada correctamente",
-                    "success"
-                );
+                showNotification("Categoría eliminada correctamente", "success");
                 closeConfirmDeleteModal();
                 window.location.reload();
             })
@@ -853,30 +719,12 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    document.getElementById("confirmDeleteBtn").addEventListener("click", function() {
-        const taskId = this.dataset.taskId;
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
-    
-        apiFetch(`/api/tareas/${taskId}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": csrfToken,
-            },
-        })
-        .then(() => {
-            showNotification("Tarea eliminada correctamente", "success");
-            closeConfirmDeleteModal();
-            loadTasks();
-        })
-        .catch((error) => {
-            console.error("Error:", error);
-            showNotification("Error al eliminar la tarea", "error");
-            closeConfirmDeleteModal();
-        });
-    });
-
-    // Funciones globales
+    /**
+     *  Funciones Globales 
+     * ------------------------------------------------------- 
+     * Expone funciones clave al ámbito global para ser accesibles
+     * desde eventos HTML y otros scripts.
+     */
     window.filterTasksByCategory = filterTasksByCategory;
     window.openNewCategoryModal = openNewCategoryModal;
     window.closeCategoryModal = closeCategoryModal;
@@ -890,21 +738,17 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     window.deleteTask = function(taskId, taskTitle) {
-
         const confirmModal = document.getElementById("confirmDeleteModal");
         const confirmMessage = document.getElementById("confirmDeleteMessage");
         const confirmBtn = document.getElementById("confirmDeleteBtn");
         const warningText = document.getElementById("additionalWarning");
     
-
         confirmMessage.textContent = `¿Estás seguro de que deseas eliminar la tarea "${taskTitle || 'seleccionada'}"?`;
         warningText.textContent = "Esta acción no se puede deshacer.";
     
-
         confirmBtn.replaceWith(confirmBtn.cloneNode(true));
         const newConfirmBtn = document.getElementById("confirmDeleteBtn");
     
-
         newConfirmBtn.onclick = function() {
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
     
@@ -922,10 +766,7 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch((error) => {
                 console.error("Error al eliminar tarea:", error);
-                showNotification(
-                    error.details?.error || "Error al eliminar la tarea", 
-                    "error"
-                );
+                showNotification(error.details?.error || "Error al eliminar la tarea", "error");
                 closeConfirmDeleteModal();
             });
         };
@@ -956,9 +797,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 showNotification("Error al actualizar el estado", "error");
             });
     };
-    window.closeConfirmDeleteModal = function() {
-    document.getElementById("confirmDeleteModal").classList.remove("active");
-};
+
     window.openShareModal = openShareModal;
     window.closeShareModal = closeShareModal;
     window.handleShareSubmit = handleShareSubmit;

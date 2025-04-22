@@ -1,8 +1,6 @@
 /**
  * Muestra una notificación en la interfaz de usuario
- * @param {string} message - Mensaje a mostrar en la notificación
- * @param {string} [type='info'] - Tipo de notificación (info, error, success, warning)
- * @param {number} [duration=3000] - Duración en milisegundos que se mostrará la notificación (0 = permanente)
+ * ------------------------------------------------------- 
  */
 function showNotification(message, type = 'info', duration = 3000) {
     const notification = document.createElement('div');
@@ -27,8 +25,7 @@ function showNotification(message, type = 'info', duration = 3000) {
 
 /**
  * Maneja errores de fetch y muestra notificaciones apropiadas
- * @param {Error} error - Objeto de error capturado
- * @param {string} [context=''] - Contexto adicional para identificar el origen del error
+ * ------------------------------------------------------- 
  */
 function handleFetchError(error, context = '') {
     console.error(`${context ? context + ': ' : ''}`, error);
@@ -48,9 +45,7 @@ function handleFetchError(error, context = '') {
 
 /**
  * Realiza peticiones fetch con opciones por defecto y manejo de errores
- * @param {string} url - URL para la petición
- * @param {Object} [options={}] - Opciones adicionales para fetch
- * @returns {Promise} Promesa con la respuesta de la petición
+ * ------------------------------------------------------- 
  */
 function apiFetch(url, options = {}) {
     const defaultOptions = {
@@ -80,7 +75,6 @@ function apiFetch(url, options = {}) {
                 const error = new Error(response.statusText);
                 error.response = response;
                 try {
-                   
                     error.details = await response.json();
                 } catch (e) {}
                 throw error;
@@ -98,8 +92,7 @@ function apiFetch(url, options = {}) {
 
 /**
  * Escapa caracteres HTML para prevenir XSS
- * @param {string} str - Cadena a escapar
- * @returns {string} Cadena con caracteres HTML escapados
+ * ------------------------------------------------------- 
  */
 function escapeHtml(str) {
     const div = document.createElement('div');
