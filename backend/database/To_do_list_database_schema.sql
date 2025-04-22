@@ -118,3 +118,58 @@ CREATE TRIGGER trigger_log_tarea_eliminada
     END;
 
 DROP TRIGGER IF EXISTS trigger_log_tarea_eliminada;
+
+
+/*
+CASOS DE PRUEBA:
+
+1. Crear un nuevo usuario válido:
+    INSERT INTO Usuario (email, password_hash, nombre_completo)
+    VALUES ('usuario1@example.com', 'hash123', 'Usuario Uno');
+
+1.2 Crear un nuevo usuario con email duplicado:
+    INSERT INTO Usuario (email, password_hash, nombre_completo)
+    VALUES ('usuario1@example.com', 'otrohash', 'Duplicado');
+
+2. Crear una categoría predeterminada:
+    INSERT INTO CategoriaPredeterminada (nombre, descripcion)
+    VALUES ('Trabajo', 'Tareas laborales');
+
+3. Insertar una categoría asosciada a un usuario y predeterminada:
+    INSERT INTO Categoria (usuario_id, categoria_predeterminada_id, es_predeterminada)
+    VALUES (1, 1, TRUE);
+
+4. INSERT INTO Categoria (usuario_id, categoria_predeterminada_id, es_predeterminada)
+VALUES (30, 1, TRUE); --Revisar
+
+5. Crear una tarea asociada a un usuario y categoría válidos:
+    INSERT INTO Tarea (categoria_id, usuario_id, titulo, descripcion)
+    VALUES (1, 1, 'Preparar informe', 'Informe mensual para el cliente');
+
+6. Asignar tarea existente a otro usuario:
+    INSERT INTO UsuarioTarea (usuario_id, tarea_id, permisos)
+    VALUES (1, 1, 'ESCRITURA');
+
+
+7. Eliminar una tarea y verificar que se loguea:
+    -- Primero inserta tarea:
+    INSERT INTO Tarea (usuario_id, titulo)
+    VALUES (1, 'Tarea para eliminar');
+
+    -- Luego eliminarla:
+    DELETE FROM Tarea WHERE titulo = 'Tarea para eliminar';
+
+    -- Verificar el log:
+    SELECT * FROM LogTareaEliminada;
+
+
+8. Crear una tarea con fecha de vencimiento pasada:
+    INSERT INTO Tarea (usuario_id, titulo, estado, fecha_vencimiento)
+    VALUES (1, 'Tarea vencida', 'NUEVA', CURDATE() - INTERVAL 1 DAY);
+
+    CALL actualizar_tareas_vencidas();
+
+    -- Verificar que el estado sea 'PENDIENTE'
+    SELECT * FROM Tarea WHERE titulo = 'Tarea vencida';
+
+*/
