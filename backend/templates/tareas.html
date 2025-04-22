@@ -3,10 +3,11 @@
 {% block title %}Mis Tareas - ToDo List{% endblock %}
 
 {% block styles %}
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/tasks.css') }}">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tasks.css') }}">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 {% endblock %}
 
 {% block content %}
@@ -18,7 +19,7 @@
         To-Do List
       </h1>
     </div>
-    
+
     <div class="user-profile">
       <div class="user-avatar">
         <i class="material-icons">person</i>
@@ -28,7 +29,7 @@
         <p>Usuario</p>
       </div>
     </div>
-    
+
     <div class="categories">
       <div class="category-item active" onclick="filterTasksByCategory(this, null)">
         <div class="category-icon">
@@ -37,31 +38,39 @@
         <span>Todas</span>
       </div>
       {% for categoria in categorias %}
-      <div class="category-item"
-     data-category-id="{{ categoria.id }}"
-     onclick="filterTasksByCategory(this, '{{ categoria.id }}')">
-        <div class="category-icon {% if categoria.categoria_predeterminada %}category-{{ categoria.categoria_predeterminada.nombre|lower }}{% else %}category-other{% endif %}">
+      <div class="category-item" data-category-id="{{ categoria.id }}"
+        onclick="filterTasksByCategory(this, '{{ categoria.id }}')">
+        <div
+          class="category-icon {% if categoria.categoria_predeterminada %}category-{{ categoria.categoria_predeterminada.nombre|lower }}{% else %}category-other{% endif %}">
           <i class="material-icons">
             {% if categoria.categoria_predeterminada %}
-              {{ 'work' if categoria.categoria_predeterminada.nombre == 'Trabajo' else 
-                 'home' if categoria.categoria_predeterminada.nombre == 'Personal' else 
-                 'school' if categoria.categoria_predeterminada.nombre == 'Estudio' else 
-                 'category' }}
+            {{ 'work' if categoria.categoria_predeterminada.nombre == 'Trabajo' else
+            'home' if categoria.categoria_predeterminada.nombre == 'Personal' else
+            'school' if categoria.categoria_predeterminada.nombre == 'Estudio' else
+            'category' }}
             {% else %}
-              category
+            category
             {% endif %}
           </i>
         </div>
         <span>
           {% if categoria.categoria_predeterminada %}
-            {{ categoria.categoria_predeterminada.nombre }}
+          {{ categoria.categoria_predeterminada.nombre }}
           {% else %}
-            Personalizada
+          Personalizada
           {% endif %}
         </span>
+        <div class="category-actions">
+          <button class="icon-button edit-button" onclick="event.stopPropagation(); openEditCategoryModal('{{ categoria.id }}', '{% if categoria.categoria_predeterminada %}{{ categoria.categoria_predeterminada.nombre }}{% else %}Personalizada{% endif %}', '{% if categoria.categoria_predeterminada %}{{ categoria.categoria_predeterminada.descripcion or '' }}{% else %}{% endif %}')">
+            <i class="material-icons">edit</i>
+          </button>
+          <button class="icon-button delete-button" onclick="event.stopPropagation(); confirmDeleteCategory('{{ categoria.id }}', '{% if categoria.categoria_predeterminada %}{{ categoria.categoria_predeterminada.nombre }}{% else %}Personalizada{% endif %}')">
+            <i class="material-icons">delete</i>
+          </button>
+        </div>
       </div>
       {% endfor %}
-      
+
       <div class="add-category" onclick="openNewCategoryModal()">
         <div class="category-icon" style="background-color: var(--primary)">
           <i class="material-icons">add</i>
@@ -102,41 +111,41 @@
       <h2 id="modalTitle">Nueva Tarea</h2>
       <button class="close-modal" id="closeModal">&times;</button>
     </div>
-    
+
     <form id="taskForm">
       <input type="hidden" id="taskId">
-      
+
       <div class="form-group">
         <label for="taskTitle">Título</label>
         <input type="text" id="taskTitle" class="form-control" required>
       </div>
-      
+
       <div class="form-group">
         <label for="taskDescription">Descripción</label>
         <textarea id="taskDescription" class="form-control" rows="4"></textarea>
       </div>
-      
+
       <div class="form-group">
         <label for="taskDueDate">Fecha de vencimiento</label>
         <input type="date" id="taskDueDate" class="form-control">
       </div>
-      
+
       <div class="form-group">
         <label for="taskCategory">Categoría</label>
         <select id="taskCategory" class="form-control">
           <option value="">Sin categoría</option>
           {% for categoria in categorias %}
-            <option value="{{ categoria.id }}">
-              {% if categoria.categoria_predeterminada %}
-                {{ categoria.categoria_predeterminada.nombre }}
-              {% else %}
-                Personalizada
-              {% endif %}
-            </option>
+          <option value="{{ categoria.id }}">
+            {% if categoria.categoria_predeterminada %}
+            {{ categoria.categoria_predeterminada.nombre }}
+            {% else %}
+            Personalizada
+            {% endif %}
+          </option>
           {% endfor %}
         </select>
       </div>
-      
+
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" id="cancelTaskBtn">Cancelar</button>
         <button type="submit" class="btn btn-primary">Guardar</button>
@@ -151,23 +160,69 @@
       <h2>Nueva Categoría</h2>
       <button class="close-modal" onclick="closeCategoryModal()">&times;</button>
     </div>
-    
+
     <form id="categoryForm" onsubmit="createNewCategory(event)">
       <div class="form-group">
         <label for="categoryName">Nombre</label>
         <input type="text" id="categoryName" class="form-control" required>
       </div>
-      
+
       <div class="form-group">
         <label for="categoryDescription">Descripción</label>
         <textarea id="categoryDescription" class="form-control" rows="3"></textarea>
       </div>
-      
+
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" onclick="closeCategoryModal()">Cancelar</button>
         <button type="submit" class="btn btn-primary">Crear</button>
       </div>
     </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="editCategoryModal">
+  <div class="task-modal">
+    <div class="modal-header">
+      <h2>Editar Categoría</h2>
+      <button class="close-modal" onclick="closeEditCategoryModal()">&times;</button>
+    </div>
+
+    <form id="editCategoryForm" onsubmit="updateCategory(event)">
+      <input type="hidden" id="editCategoryId">
+      <div class="form-group">
+        <label for="editCategoryName">Nombre</label>
+        <input type="text" id="editCategoryName" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <label for="editCategoryDescription">Descripción</label>
+        <textarea id="editCategoryDescription" class="form-control" rows="3"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeEditCategoryModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="confirmDeleteModal">
+  <div class="task-modal">
+    <div class="modal-header">
+      <h2>Confirmar eliminación</h2>
+      <button class="close-modal" onclick="closeConfirmDeleteModal()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <p id="confirmDeleteMessage">¿Estás seguro de que deseas eliminar esta categoría?</p>
+      <p>Las tareas asociadas a esta categoría quedarán sin categoría.</p>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline" onclick="closeConfirmDeleteModal()">Cancelar</button>
+      <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
+    </div>
   </div>
 </div>
 
@@ -177,7 +232,7 @@
       <h2>Compartir Tarea</h2>
       <button class="close-modal" onclick="closeShareModal()">&times;</button>
     </div>
-    
+
     <div class="modal-body">
       <form id="shareForm" onsubmit="handleShareSubmit(event)">
         <input type="hidden" id="shareTaskId">
@@ -187,7 +242,7 @@
             <input type="email" id="shareEmail" class="form-control" required>
             <div id="shareError" class="error-message"></div>
           </div>
-          
+
           <div class="form-group" style="width: 150px; margin-left: 10px;">
             <label for="sharePermissions">Permisos</label>
             <select id="sharePermissions" class="form-control" required>
@@ -195,13 +250,13 @@
               <option value="ESCRITURA">Escritura</option>
             </select>
           </div>
-          
+
           <button type="submit" class="btn btn-primary" style="align-self: flex-end; margin-left: 10px;">
             <i class="material-icons">add</i>
           </button>
         </div>
       </form>
-      
+
       <div class="shared-users-list">
         <h3>Usuarios con acceso</h3>
         <div id="sharedUsersContainer">
@@ -209,7 +264,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="modal-actions">
       <button type="button" class="btn btn-outline" onclick="closeShareModal()">Cerrar</button>
     </div>
@@ -219,6 +274,6 @@
 {% endblock %}
 
 {% block scripts %}
-  <script src="{{ url_for('static', filename='js/shared.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/tasks.js') }}"></script>
+<script src="{{ url_for('static', filename='js/shared.js') }}"></script>
+<script src="{{ url_for('static', filename='js/tasks.js') }}"></script>
 {% endblock %}

@@ -152,5 +152,40 @@ function initAuthForms() {
     }
 }
 
+/**
+ * Alterna entre mostrar y ocultar la contraseña
+ * @param {string} fieldId - ID del campo de contraseña
+ */
+function togglePassword(fieldId) {
+    const passwordField = document.getElementById(fieldId);
+    const formGroup = passwordField.closest('.form-group');
+    const toggleIcon = formGroup.querySelector('.toggle-password');
+    
+    if (passwordField.type === "password") {
+      passwordField.type = "text";
+      passwordField.classList.add('password-visible');
+      toggleIcon.textContent = "visibility";
+      // Ocultar después de 3 segundos
+      setTimeout(() => {
+        passwordField.type = "password";
+        passwordField.classList.remove('password-visible');
+        toggleIcon.textContent = "visibility_off";
+      }, 3000);
+    } else {
+      passwordField.type = "password";
+      passwordField.classList.remove('password-visible');
+      toggleIcon.textContent = "visibility_off";
+    }
+  }
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.toggle-password').forEach(icon => {
+      icon.addEventListener('click', function() {
+        const fieldId = this.closest('.form-group').querySelector('input').id;
+        togglePassword(fieldId);
+      });
+    });
+  });
+
 // Inicializa los formularios cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', initAuthForms);
