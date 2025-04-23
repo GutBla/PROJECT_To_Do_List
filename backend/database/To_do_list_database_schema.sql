@@ -1,7 +1,5 @@
 /**
 * Script de creación inicial para la base de datos del proyecto To Do List
-* Versión: 1.0
-* Fecha: 2024-04-08
 */
 
 CREATE DATABASE IF NOT EXISTS todo_list;

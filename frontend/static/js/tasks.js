@@ -1,5 +1,5 @@
 /**
- *  Gestión de Tareas - Aplicación Kanban 
+ *  Gestión de Tareas - todo list
  * ------------------------------------------------------- 
  * Inicializa y gestiona toda la funcionalidad del tablero Kanban de tareas,
  * incluyendo creación, edición, eliminación, filtrado, drag & drop,

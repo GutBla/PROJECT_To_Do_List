@@ -44,7 +44,7 @@ entity Tarea {
   fecha_completado : TIMESTAMP
 }
 
-entity Usuario_Tarea {
+entity UsuarioTarea {
   * usuario_id : INT
   * tarea_id : INT
   --
@@ -52,12 +52,27 @@ entity Usuario_Tarea {
   permisos : ENUM('LECTURA', 'ESCRITURA', 'PROPIETARIO')
 }
 
+entity LogTareaEliminada {
+  * id : INT
+  --
+  tarea_id : INT
+  usuario_id : INT
+  titulo : VARCHAR(255)
+  descripcion : TEXT
+  estado : ENUM('NUEVA', 'EN_PROGRESO', 'COMPLETADA', 'PENDIENTE')
+  fecha_vencimiento : DATE
+  fecha_completado : TIMESTAMP
+  fecha_eliminacion : TIMESTAMP
+}
+
 Usuario ||--o{ Categoria : "1:N"
-CategoriaPredeterminada }o--o{ Categoria : "0:N (predeterminadas)"
+CategoriaPredeterminada ||--o{ Categoria : "1:N (predeterminadas)"
 Categoria ||--o{ Tarea : "1:N (opcional)"
 Usuario ||--o{ Tarea : "1:N (propietario)"
-Usuario_Tarea }|--|| Usuario : "M:N (asignaciones)"
-Usuario_Tarea }|--|| Tarea : "M:N (tareas asignadas)"
+UsuarioTarea }|..|| Usuario : "M:N (usuarios asignados)"
+UsuarioTarea }|..|| Tarea : "M:N (tareas asignadas)"
+Tarea ||--o{ LogTareaEliminada : "1:N (registro de eliminación)"
+Usuario ||--o{ LogTareaEliminada : "1:N (usuario que eliminó)"
 
 note top of Categoria
   FK usuario_id -> Usuario.id (ON DELETE CASCADE)
@@ -69,10 +84,15 @@ note top of Tarea
   FK usuario_id -> Usuario.id (ON DELETE CASCADE)
 end note
 
-note top of Usuario_Tarea
+note top of UsuarioTarea
   PK (usuario_id, tarea_id)
   FK usuario_id -> Usuario.id (ON DELETE CASCADE)
   FK tarea_id -> Tarea.id (ON DELETE CASCADE)
+end note
+
+note top of LogTareaEliminada
+  FK tarea_id -> Tarea.id (lógico, no físico)
+  FK usuario_id -> Usuario.id (lógico, no físico)
 end note
 
 @enduml

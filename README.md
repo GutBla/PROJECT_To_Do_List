@@ -1,104 +1,187 @@
-# Proyecto: TO-DO List 🗂️
+# Proyecto: **TO-DO List** 🗂️
 
-<img src="images/Portada_Base_de_Datos_To_Do_List.png" alt="Portada Base de Datos To Do List" width="500">
+<img src="images/Portada_Base_de_Datos_To_Do_List.png" alt="Portada Base de Datos To Do List" width="800">
 
-## Descripción del Proyecto
-El proyecto **TO-DO List** es una aplicación web diseñada para gestionar de manera eficiente las tareas diarias de los usuarios. La aplicación permite realizar operaciones fundamentales sobre las tareas, tales como agregar, editar, eliminar y marcar tareas como completadas. Asimismo, incluye funcionalidades para organizar las tareas por categorías y permite la autenticación de usuarios con encriptación de contraseñas, asegurando la privacidad y protección de los datos personales.
+# **To-Do List App - Gestión Inteligente de Tareas**
 
-### Características principales
+Este proyecto consiste en el desarrollo de una aplicación web orientada a la gestión eficiente de tareas tanto personales como colaborativas. Está construida utilizando el framework **Flask** en el backend (Python) y **MySQL** como sistema de gestión de bases de datos. Su propósito principal es facilitar la organización del trabajo diario mediante una interfaz intuitiva y funcionalidades modernas que promueven la productividad y la colaboración entre usuarios.
 
-- Autenticación de usuarios con encriptación de contraseñas.
-- Gestión de tareas (Agregar, Editar, Eliminar, Completar).
-- Asignación de tareas a categorías (por defecto o personalizadas).
-- Interfaz de usuario simple y adaptable.
-- Conexión a la base de datos MySQL para el almacenamiento persistente de tareas y usuarios.
-- Documentación clara sobre cómo ejecutar y mantener la aplicación.
+La aplicación está diseñada para ser utilizada por individuos, equipos pequeños y medianos, instituciones educativas, o cualquier entorno que requiera seguimiento estructurado de actividades. Entre sus principales características se destacan:
 
-## Reglas y Convenciones del Proyecto
+- Autenticación segura de usuarios.
+- Interfaz tipo Kanban con tareas clasificadas según su estado.
+- Gestión de permisos para tareas compartidas.
+- Filtros avanzados y categorización de tareas.
 
-### 1. Convenciones de Nombres
+---
 
-Dado que el proyecto utiliza diversas tecnologías, se deberán seguir las siguientes convenciones:
+## **Características Principales**
 
-#### Código Fuente (Python, JavaScript, HTML, CSS)
-- **Python:**
-  - Los nombres de módulos y paquetes se escribirán en minúsculas, utilizando guiones bajos para separar palabras (ejemplo: `app.py`, `database_utils.py`).
-  - Los nombres de clases se escribirán en CamelCase (ejemplo: `UserAuthentication`, `TaskManager`).
-- **JavaScript:**
-  - Las funciones y variables se escribirán en camelCase (ejemplo: `getTaskList()`, `userLogin`).
-  - Los nombres de clases se escribirán en PascalCase (ejemplo: `TaskController`).
-- **HTML y CSS:**
-  - Los archivos deberán tener nombres descriptivos y en minúsculas (ejemplo: `index.html`, `style.css`).
-  - Para las clases CSS se recomienda la convención BEM (Block__Element--Modifier) (ejemplo: `header__title--main`).
+![Ejecucion_To_Do_List_01](images/Ejecucion_To_Do_List_01.gif)
 
-#### Archivos de Configuración y Documentación
-- Los archivos de configuración (por ejemplo, `config.py`, `.env`) y documentos de apoyo (por ejemplo, `README.md`, `LICENSE`) se nombrarán de forma clara y sin espacios, utilizando la extensión correspondiente.
+### **Seguridad**
 
-### 2. Convenciones de Commit
+- Implementación de autenticación mediante hashing seguro con PBKDF2 y salt.
+- Protección contra vulnerabilidades comunes como CSRF (Cross-Site Request Forgery), XSS (Cross-Site Scripting) e inyecciones SQL.
+- Uso de cookies con atributos `HttpOnly` y `Secure` para mayor protección en entornos productivos.
 
-Los mensajes de commit se redactarán en español y deberán seguir el siguiente formato:
+### **Gestión de Tareas**
 
+- Funcionalidad CRUD (Crear, Leer, Actualizar y Eliminar) para tareas.
+- Asignación de fechas de vencimiento con indicadores visuales de alerta.
+- Interfaz tipo "drag and drop" para mover tareas entre estados: "Nueva", "En progreso" y "Completada".
+- Posibilidad de asignar categorías a las tareas y filtrarlas según criterios personalizados.
 
-#### Tabla de Convenciones de Commit
+### **Colaboración**
 
-| Prefijo   | Descripción                                                             | Ejemplo                                                      |
-|-----------|-------------------------------------------------------------------------|--------------------------------------------------------------|
-| feat      | Nueva funcionalidad                                                   | feat(estructura): Creación de la estructura inicial del proyecto |
-| fix       | Corrección de errores o incidencias                                   | fix(conexion): Corrección en la conexión a la base de datos    |
-| docs      | Actualización o modificaciones en la documentación                    | docs(user-guide): Actualización de la guía del usuario         |
-| style     | Cambios en el formato o presentación (sin afectar la lógica)            | style(css): Ajuste en el formato de los estilos               |
-| refactor  | Reorganización o mejoras en el código sin modificar funcionalidades     | refactor(auth): Reestructuración de la lógica de autenticación  |
-| perf      | Optimización del rendimiento                                            | perf(query): Mejora en el rendimiento de consultas a la base de datos |
-| test      | Incorporación o modificación de pruebas unitarias o de integración      | test(api): Agregado de pruebas para los endpoints de la API     |
-| chore     | Tareas de mantenimiento, actualización de dependencias o ajustes de configuración | chore(config): Actualización de la configuración del entorno    |
-| build     | Cambios en las herramientas de construcción o en el entorno de despliegue | build(webpack): Ajuste en la configuración de Webpack           |
-| ci        | Modificaciones relacionadas con la integración y despliegue continuo      | ci(gitlab): Configuración del pipeline en GitLab                |
-| revert    | Reversión de un commit previo                                           | revert(feat): Reversión del commit de creación de la estructura    |
+- Compartición de tareas mediante invitación por correo electrónico.
+- Definición de permisos a nivel de tarea (solo lectura o lectura y escritura).
+- Registro de historial de cambios en tareas compartidas para seguimiento de modificaciones.
 
-### 3. Política de Ramas
+### **Interfaz de Usuario**
 
-- **Rama Principal (main):**
-  - La rama `main` contendrá únicamente el código listo para producción. No se debe trabajar directamente en esta rama.
-  
-- **Rama de Desarrollo (develop):**
-  - Todas las tareas de desarrollo y la integración de nuevas funcionalidades se realizarán en la rama `develop`.
-  - Los desarrolladores deberán crear ramas de trabajo a partir de `develop`, siguiendo la convención de nombres (por ejemplo, `feature/nueva-funcionalidad`, `bugfix/correccion-error-login`).
-  - Una vez finalizadas las tareas, se enviará un merge request para integrar los cambios a la rama `develop`.
-  
-- **Integración a main:**
-  - La integración de cambios a la rama `main` solo se realizará tras una revisión previa y mediante un merge request aprobado o siguiendo el procedimiento de etiquetado de versiones.
-  - No se permitirá realizar push directo a `main` sin la autorización correspondiente.
+- Diseño adaptable a diferentes resoluciones (responsive), compatible con dispositivos móviles y de escritorio.
+- Uso de ventanas modales para realizar acciones rápidas sin necesidad de recargar la página.
+- Notificaciones en tiempo real mediante tecnologías como WebSockets (en futuras versiones).
 
-## Instalación y Configuración
+---
+
+## **Requisitos del Sistema**
+
+| Componente | Versión Recomendada | Instalación |
+| --- | --- | --- |
+| Python | 3.10 o superior | [https://www.python.org/downloads/](https://www.python.org/downloads/) |
+| MySQL | 8.0 o superior | [https://dev.mysql.com/downloads/](https://dev.mysql.com/downloads/) |
+| Git | 2.30 o superior | [https://git-scm.com/downloads](https://git-scm.com/downloads) |
+
+---
+
+## **Instalación y Configuración**
+
 ### 1. Clonar el Repositorio
-Para obtener una copia local del repositorio, ejecute el siguiente comando:
 
 ```bash
-git clone https://gitlab.com/usuario/proyecto-todolist.git
+git clone https://gitlab.com/AndreaGutierrez_Jala_U/project_to_do_list.git
+cd project_to_do_list
+
 ```
-## Documentación Adicional
-1. Diagrama ER: Ver Diagrama ER
-2. Modelo Relacional: Ver Modelo Relacional
-3. Guía del Usuario: Ver Guía del Usuario
-4. Notas de la Reunión: Ver Notas de la Reunión
 
-## Contribuciones
+### 2. Crear y Activar un Entorno Virtual
 
-Las contribuciones al proyecto son bienvenidas. Para colaborar con el desarrollo del proyecto, por favor siga los siguientes pasos:
+```bash
+python -m venv venv
+# En Windows:
+venv\Scripts\activate
+# En Linux/macOS:
+source venv/bin/activate
 
-1. Haga un fork del repositorio.
-2. Cree una nueva rama:
-    ```bash
-    git checkout -b feature/nueva-funcionalidad
-    ```
-3. Realice los cambios necesarios en el código.
-4. Haga un commit con el mensaje adecuado:
-    ```bash
-    git commit -m 'feat(nueva-funcionalidad): Descripción de la mejora'
-    ```
-5. Realice un push a su rama:
-    ```bash
-    git push origin feature/nueva-funcionalidad
-    ```
-6. Abra un Pull Request para que se revisen sus cambios.
-Gracias por su colaboración y contribuciones al proyecto.
+```
+
+### 3. Instalar las Dependencias del Proyecto
+
+```bash
+pip install -r requirements.txt
+
+```
+
+### 4. Configurar la Base de Datos
+
+1. Crear una base de datos en MySQL llamada `todo_list`.
+2. Ejecutar el script de creación de tablas y datos iniciales:
+
+```bash
+mysql -u [usuario] -p todo_list < database/To_do_list_database_schema.sql
+
+```
+
+1. Configurar las variables de entorno (crear archivo `.env` a partir de `.env.example`):
+
+```
+MYSQL_HOST=localhost
+MYSQL_USER=tu_usuario
+MYSQL_PASSWORD=tu_contraseña
+MYSQL_DB=todo_list
+SECRET_KEY=clave_secreta_generada
+
+```
+
+---
+
+## **Ejecución del Proyecto**
+
+Iniciar el servidor Flask con el siguiente comando:
+
+```bash
+flask run
+
+```
+
+Una vez iniciado, la aplicación estará disponible localmente en: `http://localhost:5000`
+
+---
+
+## **Pruebas con Datos Iniciales (Opcional)**
+
+Para pruebas rápidas, se puede insertar un usuario manualmente:
+
+```sql
+INSERT INTO Usuario (email, password_hash, nombre_completo)
+VALUES ('test@example.com', 'hash_generado', 'Usuario Demo');
+
+```
+
+---
+
+## **Guía de Uso**
+
+1. **Registro e Inicio de Sesión**
+    - Visitar `/register` para crear una cuenta.
+    - Ingresar a `/login` para autenticarse.
+2. **Gestión de Tareas**
+    - Crear tareas asignando título, descripción y fecha de vencimiento.
+    - Utilizar la vista Kanban para cambiar el estado de las tareas.
+    - Editar y eliminar tareas según sea necesario.
+3. **Compartición y Colaboración**
+    - Compartir tareas mediante correo electrónico.
+    - Seleccionar permisos para los colaboradores (lectura o edición).
+    - Ver historial de cambios en tareas compartidas.
+4. **Filtrado y Categorización**
+    - Aplicar filtros por categorías desde el panel lateral.
+    - Gestionar categorías según preferencias del usuario.
+
+---
+
+## **Comandos Útiles**
+
+| Acción | Comando |
+| --- | --- |
+| Reiniciar base de datos | `flask init-db` (script propio) |
+| Ejecutar pruebas | `pytest tests/` |
+
+---
+
+## **Documentación Adicional**
+
+- **Diagramas de Arquitectura**: disponibles en la carpeta `docs/diagrams/`.
+- **Guía de Seguridad**: archivo `docs/SECURITY.md`.
+- **Documentación de la API**: archivo `docs/API.md`.
+
+---
+
+## **Contribuciones**
+
+![Convenciones_de_Nombre](images/Convenciones_de_Nombre.png)
+
+Las contribuciones están abiertas a toda persona interesada. Para participar:
+
+1. Realizar un fork del repositorio.
+2. Crear una nueva rama (`feature/nombre-del-cambio`).
+3. Subir los cambios y enviar un Pull Request con la descripción correspondiente.
+
+---
+
+## **Información de Contacto**
+
+- Repositorio del Proyecto:
+    
+    [https://gitlab.com/AndreaGutierrez_Jala_U/project_to_do_list.git](https://gitlab.com/AndreaGutierrez_Jala_U/project_to_do_list.git)
