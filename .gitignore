@@ -99,12 +99,6 @@ logs/
 config.local.py
 .env.local
 
-# Archivos de capturas o imágenes de pruebas
-screenshots/
-*.png
-*.jpg
-*.gif
-
 # Archivos de backup
 *.bak
 *.orig
