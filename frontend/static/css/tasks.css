@@ -1,10 +1,8 @@
-/* ----- Estilos Base y Diseño ----- */
 .app-layout {
   display: flex;
   min-height: 100vh;
 }
 
-/* ----- Contenido Principal ----- */
 .main-content {
   flex: 1;
   display: flex;
@@ -12,7 +10,6 @@
   min-height: 100vh;
 }
 
-/* ----- Barra Lateral ----- */
 .sidebar {
   width: 280px;
   background-color: var(--white);
@@ -24,15 +21,13 @@
   flex-direction: column;
 }
 
-/* ----- Encabezado de la Barra Lateral ----- */
 .sidebar-header {
   padding: 24px;
   background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  color: white;
+  color: var(--white);
   text-align: center;
 }
 
-/* ----- Título del Encabezado de la Barra Lateral ----- */
 .sidebar-header h1 {
   margin: 0;
   font-weight: 600;
@@ -43,7 +38,6 @@
   gap: 10px;
 }
 
-/* ----- Perfil de Usuario ----- */
 .user-profile {
   display: flex;
   align-items: center;
@@ -53,7 +47,6 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* ----- Avatar del Usuario ----- */
 .user-avatar {
   width: 48px;
   height: 48px;
@@ -65,7 +58,6 @@
   color: var(--primary);
 }
 
-/* ----- Información del Usuario ----- */
 .user-info h3 {
   margin: 0;
   font-size: 16px;
@@ -77,12 +69,10 @@
   color: var(--gray);
 }
 
-/* ----- Categorías ----- */
 .categories {
-  padding: 0 12px; /* Padding lateral aumentado */
+  padding: 0 12px;
 }
 
-/* ----- Elemento de Categoría ----- */
 .category-item {
   padding: 12px 16px;
   margin-bottom: 8px;
@@ -94,12 +84,10 @@
   position: relative;
 }
 
-/* ----- Efecto Hover en Elemento de Categoría ----- */
 .category-item:hover {
   background-color: rgba(240, 90, 126, 0.05);
 }
 
-/* ----- Estilo de Categoría Activa ----- */
 .category-item.active {
   background: rgba(240, 90, 126, 0.08);
   border-left: 3px solid var(--primary);
@@ -109,41 +97,36 @@
   display: flex;
 }
 
-/* ----- Ícono de Categoría ----- */
 .category-icon {
-  width: 32px; /* Tamaño aumentado */
+  width: 32px;
   height: 32px;
-  min-width: 32px; /* Evita compresión */
-  border-radius: 8px; /* Bordes más suaves */
+  min-width: 32px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(240, 90, 126, 0.1) !important; /* Fondo sutil */
+  background: rgba(240, 90, 126, 0.1) !important;
   color: var(--primary);
   font-size: 18px;
 }
 
-/* Texto de categoría */
 .category-item span {
   flex-grow: 1;
   padding-right: 8px;
 }
 
-/* ----- Estilos para la Categoría Seleccionada ----- */
 .category-item[onclick*="filterTasksByCategory(this, null)"] .category-icon {
-  color: #FF8C9E;
+  color: var(--primary-light);
 }
 
-/* ----- Estilos para Categorías Específicas ----- */
-.category-work, 
-.category-personal, 
-.category-study, 
+.category-work,
+.category-personal,
+.category-study,
 .category-other {
   background-color: transparent;
-  color: #FF8C9E;
+  color: var(--primary-light);
 }
 
-/* ----- Acción de Agregar Categoría ----- */
 .add-category {
   display: flex;
   align-items: center;
@@ -154,24 +137,35 @@
   transition: all 0.3s;
 }
 
-/* ----- Efecto Hover en Agregar Categoría ----- */
 .add-category:hover {
   background-color: rgba(240, 90, 126, 0.05);
 }
 
-/* ----- Ícono de Agregar Categoría ----- */
 .add-category .category-icon {
   transition: transform 0.3s;
 }
 
-/* ----- Efecto Hover en Ícono de Agregar Categoría ----- */
 .add-category:hover .category-icon {
   transform: scale(1.1);
 }
 
+.category-actions {
+  display: flex;
+  gap: 8px;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
 
+.category-item:hover .category-actions {
+  display: flex;
+}
 
-/* ----- Encabezado de Tareas ----- */
+.category-actions button {
+  z-index: 2;
+}
+
 .task-header {
   padding: 20px 32px;
   background-color: var(--white);
@@ -181,7 +175,6 @@
   align-items: center;
 }
 
-/* ----- Estilo del Título de Tarea ----- */
 .task-title h2 {
   margin: 0;
   font-size: 24px;
@@ -190,20 +183,17 @@
   gap: 12px;
 }
 
-/* ----- Estilo de Acciones de Tareas ----- */
 .task-actions {
   display: flex;
   gap: 12px;
 }
 
-/* ----- Contenedor de Tareas ----- */
 .task-container {
   flex: 1;
   display: flex;
   overflow: hidden;
 }
 
-/* ----- Lista de Tareas ----- */
 .task-list {
   width: 400px;
   border-right: 1px solid rgba(0, 0, 0, 0.05);
@@ -213,13 +203,11 @@
   padding: 16px;
 }
 
-/* ----- Búsqueda de Tareas ----- */
 .task-search {
   position: relative;
   margin-bottom: 16px;
 }
 
-/* ----- Estilo del Input de Búsqueda ----- */
 .task-search input {
   width: 100%;
   padding: 12px 16px 12px 40px;
@@ -230,13 +218,11 @@
   transition: all 0.3s;
 }
 
-/* ----- Estilo al Foco del Input ----- */
 .task-search input:focus {
   border-color: var(--primary-light);
   box-shadow: 0 0 0 2px rgba(240, 90, 126, 0.2);
 }
 
-/* ----- Icono dentro del Input ----- */
 .task-search i {
   position: absolute;
   left: 16px;
@@ -245,7 +231,6 @@
   color: var(--gray);
 }
 
-/* ----- Filtros de Tareas ----- */
 .task-filters {
   display: flex;
   gap: 8px;
@@ -254,7 +239,6 @@
   padding-bottom: 8px;
 }
 
-/* ----- Botones de Filtro ----- */
 .filter-btn {
   padding: 8px 16px;
   border-radius: 20px;
@@ -268,17 +252,15 @@
   transition: all 0.3s;
 }
 
-/* ----- Estado Activo de los Botones de Filtro ----- */
 .filter-btn.active {
   background-color: var(--secondary);
-  color: white;
+  color: var(--white);
 }
 
-/* ----- Elementos de Tarea ----- */
 .task-item {
   padding: 16px;
   margin-bottom: 12px;
-  background-color: white;
+  background-color: var(--white);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
   transition: all 0.3s;
@@ -286,24 +268,20 @@
   cursor: pointer;
 }
 
-/* ----- Efecto Hover en Elementos de Tarea ----- */
 .task-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
-/* ----- Elementos de Tarea Seleccionada ----- */
 .task-item.selected {
   border-left-color: var(--primary);
   background-color: rgba(240, 90, 126, 0.05);
 }
 
-/* ----- Elementos de Tarea Importante ----- */
 .task-item.important {
   border-left-color: var(--primary);
 }
 
-/* ----- Cabecera de Elemento de Tarea ----- */
 .task-item-header {
   display: flex;
   align-items: center;
@@ -311,7 +289,6 @@
   margin-bottom: 8px;
 }
 
-/* ----- Checkbox de Tarea ----- */
 .task-checkbox {
   min-width: 20px;
   height: 20px;
@@ -325,35 +302,29 @@
   justify-content: center;
 }
 
-/* ----- Estado Checked del Checkbox ----- */
 .task-checkbox:checked {
   background-color: var(--secondary);
   border-color: var(--secondary);
 }
 
-/* ----- Indicador de Marcado en el Checkbox ----- */
 .task-checkbox:checked::after {
   content: '\e5ca';
   font-family: 'Material Icons';
-  color: white;
+  color: var(--white);
   font-size: 16px;
 }
 
-
-/* ----- Título de Tarea ----- */
 .task-item-title {
   flex: 1;
   font-weight: 500;
 }
 
-/* ----- Estado de Tarea Completada ----- */
 .task-item.completed .task-item-title {
   text-decoration: line-through;
   color: var(--gray);
   opacity: 0.7;
 }
 
-/* ----- Fecha de Vencimiento de Tarea ----- */
 .task-item-due {
   font-size: 12px;
   color: var(--gray);
@@ -366,7 +337,6 @@
   color: var(--primary);
 }
 
-/* ----- Categoría de Tarea ----- */
 .task-item-category {
   font-size: 12px;
   padding: 4px 8px;
@@ -375,7 +345,6 @@
   color: var(--secondary);
 }
 
-/* ----- Descripción de Tarea ----- */
 .task-item-desc {
   font-size: 14px;
   color: var(--gray);
@@ -387,7 +356,6 @@
   overflow: hidden;
 }
 
-/* ----- Detalle de Tarea ----- */
 .task-detail {
   flex: 1;
   padding: 32px;
@@ -395,7 +363,6 @@
   background-color: var(--white);
 }
 
-/* ----- Detalle de Tarea Vacío ----- */
 .empty-detail {
   display: flex;
   flex-direction: column;
@@ -406,7 +373,6 @@
   text-align: center;
 }
 
-/* ----- Encabezado de Detalle de Tarea ----- */
 .task-detail-header {
   display: flex;
   justify-content: space-between;
@@ -414,7 +380,6 @@
   margin-bottom: 24px;
 }
 
-/* ----- Título de Detalle de Tarea ----- */
 .task-detail-title {
   font-size: 28px;
   font-weight: 600;
@@ -424,34 +389,29 @@
   gap: 12px;
 }
 
-/* ----- Estado de Tarea Completada ----- */
 .task-detail-completed {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-/* ----- Etiqueta de Estado de Tarea Completada ----- */
 .task-detail-completed label {
   font-weight: 500;
   cursor: pointer;
 }
 
-/* ----- Información de la Tarea (Metadatos) ----- */
 .task-detail-meta {
   display: flex;
   gap: 24px;
   margin-bottom: 24px;
 }
 
-/* ----- Elementos de Metadatos ----- */
 .task-meta-item {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-/* ----- Categoría de Tarea en Detalle ----- */
 .task-detail-category {
   display: inline-flex;
   align-items: center;
@@ -464,26 +424,22 @@
   margin-bottom: 16px;
 }
 
-/* ----- Descripción de Tarea en Detalle ----- */
 .task-detail-desc {
   line-height: 1.6;
   margin-bottom: 32px;
   white-space: pre-line;
 }
 
-/* ----- Acciones de Tarea ----- */
 .task-detail-actions {
   display: flex;
   gap: 12px;
   margin-top: 32px;
 }
 
-/* ----- Sección de Detalles de Tarea ----- */
 .task-detail-section {
   margin-bottom: 32px;
 }
 
-/* ----- Título de Sección en Detalle de Tarea ----- */
 .task-detail-section h3 {
   display: flex;
   align-items: center;
@@ -492,7 +448,6 @@
   color: var(--secondary);
 }
 
-/* ----- Tablero Kanban ----- */
 .kanban-board {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -505,9 +460,8 @@
   margin: 20px;
 }
 
-/* ----- Columna del Tablero Kanban ----- */
 .kanban-column {
-  background: rgba(255, 255, 255, 0.65); 
+  background: rgba(255, 255, 255, 0.65);
   border-radius: 10px;
   padding: 15px;
   backdrop-filter: blur(5px);
@@ -517,20 +471,17 @@
   transition: all 0.3s ease;
 }
 
-/* Efecto hover para mejor interacción */
 .kanban-column:hover {
   background: rgba(255, 255, 255, 0.75);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Estilo para cuando se está arrastrando sobre la columna */
 .kanban-column.drag-over {
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid var(--primary);
   box-shadow: 0 0 0 2px rgba(240, 90, 126, 0.2);
 }
 
-/* ----- Encabezado de la Columna del Tablero Kanban ----- */
 .kanban-column-header {
   padding: 12px;
   margin-bottom: 15px;
@@ -545,13 +496,6 @@
   border-bottom: 2px solid rgba(0, 0, 0, 0.05);
 }
 
-/* Efecto hover para indicar área de drop */
-.kanban-column-tasks:hover {
-  background-color: rgba(255, 255, 255, 0.7);
-  border-color: rgba(0, 0, 0, 0.2);
-}
-
-/* ----- Tareas de la Columna del Tablero Kanban ----- */
 .kanban-column-tasks {
   min-height: 200px;
   padding: 15px;
@@ -562,10 +506,43 @@
   margin-top: 10px;
 }
 
-/* Efecto durante el drag */
+.kanban-column-tasks:hover {
+  background-color: rgba(255, 255, 255, 0.7);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
 .kanban-column-tasks.drag-over {
   background-color: rgba(240, 90, 126, 0.1) !important;
   border: 2px dashed var(--primary) !important;
+}
+
+.kanban-column.NUEVA .kanban-column-header {
+  background: rgba(151, 231, 225, 0.7);
+  color: #1a7a72;
+}
+
+.kanban-column.EN_PROGRESO .kanban-column-header {
+  background: rgba(253, 216, 141, 0.7);
+  color: #8a6a0b;
+}
+
+.kanban-column.PENDIENTE .kanban-column-header {
+  background: rgba(255, 138, 138, 0.7);
+  color: #b71c1c;
+}
+
+.kanban-column.COMPLETADA .kanban-column-header {
+  background: rgba(178, 223, 138, 0.7);
+  color: #2e7d32;
+}
+
+.empty-column-message,
+.empty-column {
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  color: #999;
+  opacity: 0.7;
 }
 
 .empty-column-message.highlight-drop {
@@ -574,58 +551,40 @@
   transform: scale(1.05);
 }
 
-/* Columna "NUEVA" */
-.kanban-column.NUEVA .kanban-column-header {
-  background: rgba(151, 231, 225, 0.7);
-  color: #1a7a72;
+.empty-kanban-container {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  height: 100%;
+  min-height: 300px;
 }
 
-/* Columna "EN_PROGRESO" */
-.kanban-column.EN_PROGRESO .kanban-column-header {
-  background: rgba(253, 216, 141, 0.7);
-  color: #8a6a0b;
-}
-
-/* Columna "PENDIENTE" */
-.kanban-column.PENDIENTE .kanban-column-header {
-  background: rgba(255, 138, 138, 0.7);
-  color: #b71c1c;
-}
-
-/* Columna "COMPLETADA" */
-.kanban-column.COMPLETADA .kanban-column-header {
-  background: rgba(178, 223, 138, 0.7);
-  color: #2e7d32;
-}
-
-/* ----- Mensaje de Kanban Vacío ----- */
 .empty-kanban-message {
   text-align: center;
   color: #1a7a72;
   padding: 30px;
-  background: white;
+  background: var(--white);
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
 }
 
-/* ----- Ícono en Mensaje de Kanban Vacío ----- */
 .empty-kanban-message i {
   font-size: 48px;
   color: rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
 }
 
-/* ----- Texto en Mensaje de Kanban Vacío ----- */
 .empty-kanban-message p {
   margin: 0;
   font-size: 16px;
 }
 
-/* ----- Tarjeta de Tarea en Kanban ----- */
 .task-card {
-  background: white;
+  background: var(--white);
   border-radius: 8px;
   padding: 15px;
   margin-bottom: 15px;
@@ -640,59 +599,11 @@
   margin-bottom: 0;
 }
 
-/* ----- Efecto Hover en Tarjeta de Tarea ----- */
-.task-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-/* ----- Mensaje de Columna Vacía ----- */
-.empty-column-message,
-.empty-column {
-  text-align: center;
-  padding: 20px;
-  font-size: 14px;
-  color: #999;
-  opacity: 0.7;
-}
-
-/* ----- Contenedor Vacío del Kanban ----- */
-.empty-kanban-container {
-  grid-column: 1 / -1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 40px;
-  height: 100%;
-  min-height: 300px;
-}
-
-/* ----- Mensaje de Kanban Vacío ----- */
-.empty-kanban-message {
-  text-align: center;
-  color: #1a7a72;
-  padding: 30px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-}
-
-/* ----- Contador de Tareas por Columna ----- */
-.task-count {
-  font-weight: normal;
-  font-size: 0.9em;
-  opacity: 0.8;
-}
-
-
-/* ----- Efecto hover para mejorar la interacción visual----- */
 .task-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Tarjeta durante el arrastre - Versión minimalista */
 .task-card.dragging {
   transform: scale(1.01);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -700,19 +611,17 @@
   z-index: 1000;
   position: relative;
   border: 1px solid var(--primary-light);
-  background: white;
+  background: var(--white);
   transition: none;
 }
 
-/* Fantasma de arrastre más discreto */
 .task-card.drag-ghost {
   opacity: 0.7;
-  background: white;
+  background: var(--white);
   border: 1px solid var(--primary);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/*-----  Encabezado de la tarjeta con espacio entre título y estado-----  */
 .task-card-header {
   display: flex;
   justify-content: space-between;
@@ -720,14 +629,13 @@
   margin-bottom: 12px;
 }
 
-/* ----- Título de la tarjeta -----  */
 .task-card-title {
   margin: 0;
   padding-right: 8px;
   flex-grow: 1;
   line-height: 1.3;
 }
-/* ----- Estado o categoría visible en la tarjeta ----- */
+
 .task-card-status {
   padding: 2px 8px;
   border-radius: 12px;
@@ -740,62 +648,45 @@
   white-space: nowrap;
 }
 
-/*-----  Contador de tareas en cada columna ----- */
 .task-count {
   font-weight: normal;
   font-size: 0.9em;
   opacity: 0.8;
 }
 
-/* ----- Mensaje mostrado cuando una columna está vacía-----  */
-.empty-column {
-  text-align: center;
-  padding: 20px;
-  color: #999;
-  font-size: 14px;
-}
-
-/* ----- Título tachado y opaco para tareas completadas ----- */
-/* ----- Estado: NUEVA ----- */
 .task-card.NUEVA .task-card-status {
   background-color: #e3f2fd;
   color: #1976d2;
 }
 
-/* ----- Estado: EN PROGRESO ----- */
 .task-card.EN_PROGRESO .task-card-status {
   background-color: #fff8e1;
   color: #ff8f00;
 }
 
-/* ----- Estado: PENDIENTE ----- */
 .task-card.PENDIENTE .task-card-status {
   background-color: #ffebee;
   color: #d32f2f;
 }
 
-/* ----- Estado: COMPLETADA ----- */
 .task-card.COMPLETADA .task-card-status {
   background-color: #e8f5e9;
   color: #388e3c;
 }
 
-
-/* Fecha de vencimiento */
 .task-card-due {
   display: flex;
   align-items: center;
   gap: 10px;
   margin: 12px 0;
   padding: 8px 12px;
-  background: rgba(108, 117, 125, 0.08); /* Gris suave */
+  background: rgba(108, 117, 125, 0.08);
   border-radius: 16px;
   font-size: 13px;
   color: var(--gray);
   border: 1px solid rgba(108, 117, 125, 0.1);
 }
 
-/* Icono de calendario */
 .task-card-due i {
   font-size: 18px;
   color: var(--gray);
@@ -809,7 +700,6 @@
   justify-content: center;
 }
 
-/* Estilo para tareas vencidas */
 .task-card-due.overdue {
   background: rgba(240, 90, 126, 0.08);
   border-color: rgba(240, 90, 126, 0.1);
@@ -820,7 +710,6 @@
   color: var(--primary);
 }
 
-/* Categoría de la tarjeta */
 .task-card-category {
   display: flex;
   align-items: center;
@@ -834,10 +723,9 @@
   border: 1px solid rgba(10, 151, 176, 0.1);
 }
 
-/* Iconos de categoría */
 .task-card-category i {
   font-size: 18px !important;
-  margin-right: 4px; 
+  margin-right: 4px;
   color: var(--secondary);
   background: rgba(255, 255, 255, 0.7);
   padding: 5px;
@@ -849,14 +737,12 @@
   justify-content: center;
 }
 
-/* Ajuste específico para iconos de categoría */
 .task-card .material-icons {
   margin: 0 6px 0 2px;
   font-size: 18px;
   vertical-align: middle;
 }
 
-/* Acciones dentro de la tarjeta */
 .task-card-actions {
   display: flex;
   justify-content: space-between;
@@ -865,27 +751,24 @@
   border-top: 1px solid #eee;
 }
 
-/* Dropdown para acciones dentro de la tarjeta */
 .task-card-dropdown {
   position: relative;
   display: inline-block;
 }
 
-/* ----- Estilo del dropdown dentro de la tarjeta ----- */
 .task-card-dropdown select {
   padding: 5px 25px 5px 10px;
   border-radius: 4px;
   border: 1px solid #ddd;
-  background-color: white;
+  background-color: var(--white);
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   cursor: pointer;
 }
 
-/* ----- Flecha desplegable del dropdown ----- */
 .task-card-dropdown::after {
-  content: '\f078'; 
+  content: '\f078';
   font-family: 'Font Awesome 5 Free';
   font-weight: 900;
   font-size: 16px;
@@ -896,14 +779,11 @@
   pointer-events: none;
 }
 
-
-/* ----- Botones de acción dentro de la tarjeta ----- */
 .task-card-buttons {
   display: flex;
   gap: 5px;
 }
 
-/* ----- Estilo del botón dentro de la tarjeta ----- */
 .task-card-button {
   background: none;
   border: none;
@@ -913,12 +793,10 @@
   padding: 2px 5px;
 }
 
-/* ----- Efecto hover para el botón de la tarjeta ----- */
 .task-card-button:hover {
   color: var(--primary);
 }
 
-/* ----- Estilo para las tareas vacías en el tablero ----- */
 .empty-tasks {
   display: flex;
   flex-direction: column;
@@ -932,14 +810,12 @@
   padding: 20px;
 }
 
-/* ----- Icono para las tareas vacías ----- */
 .empty-tasks i {
   font-size: 48px;
   margin-bottom: 16px;
   color: rgba(0, 0, 0, 0.1);
 }
 
-/* ----- Checkbox ----- */
 .custom-checkbox {
   display: flex;
   align-items: center;
@@ -950,7 +826,6 @@
   margin-right: 8px;
 }
 
-/* ----- Estilo para el input (oculto) del checkbox ----- */
 .custom-checkbox input {
   position: absolute;
   opacity: 0;
@@ -959,29 +834,26 @@
   width: 0;
 }
 
-/* ----- Estilo visual de la marca de verificación (checkmark) ----- */
 .checkmark {
   position: relative;
   height: 24px;
   width: 24px;
-  background-color: #fff;
+  background-color: var(--white);
   border: 2px solid #ccc;
   border-radius: 50%;
   transition: all 0.3s;
 }
 
-/* ----- Efecto hover sobre la marca de verificación ----- */
 .custom-checkbox:hover input ~ .checkmark {
   background-color: #f2f2f2;
 }
 
-/* ----- Estilo de la marca de verificación cuando está seleccionada (checked) ----- */
 .custom-checkbox input:checked ~ .checkmark {
   background-color: #4CAF50;
   border-color: #4CAF50;
+  animation: ripple 0.6s ease;
 }
 
-/* ----- Creación del ícono de marca de verificación dentro del checkmark ----- */
 .checkmark:after {
   content: "";
   position: absolute;
@@ -990,38 +862,27 @@
   top: 4px;
   width: 5px;
   height: 10px;
-  border: solid white;
+  border: solid var(--white);
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
 
-/* ----- Muestra el ícono de marca de verificación cuando el checkbox está marcado ----- */
 .custom-checkbox input:checked ~ .checkmark:after {
   display: block;
 }
 
-/* ----- Estilo para el texto de estado junto al checkbox ----- */
 .status-text {
   font-size: 14px;
   color: #666;
   margin-left: 4px;
 }
 
-/* ----- Animación de onda en la marca de verificación al ser seleccionada ----- */
-.custom-checkbox input:checked ~ .checkmark {
-  background-color: #4CAF50;
-  border-color: #4CAF50;
-  animation: ripple 0.6s ease;
-}
-
-/* ----- Animación de "ripple" para el checkbox ----- */
 @keyframes ripple {
-  0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+  0%   { box-shadow: 0 0 0 0   rgba(76, 175, 80, 0.4); }
+  70%  { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);   }
+  100% { box-shadow: 0 0 0 0   rgba(76, 175, 80, 0);   }
 }
 
-/* ----- Modal ----- */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -1038,30 +899,26 @@
   transition: all 0.3s ease;
 }
 
-/* ----- Estilo cuando el modal está activo ----- */
 .modal-overlay.active {
   opacity: 1;
   visibility: visible;
 }
 
-/* ----- Estilo para el modal en sí (cuadro de diálogo) ----- */
 .task-modal {
-  background-color: white; 
-  border-radius: 8px; 
-  width: 100%; 
+  background-color: var(--white);
+  border-radius: 8px;
+  width: 100%;
   max-width: 500px;
-  padding: 25px; 
+  padding: 25px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transform: translateY(20px); 
-  transition: all 0.3s ease; 
+  transform: translateY(20px);
+  transition: all 0.3s ease;
 }
 
-/* ----- Estilo cuando el modal está activo (se mueve a su posición final) ----- */
 .modal-overlay.active .task-modal {
   transform: translateY(0);
 }
 
-/* ----- Estilo para la cabecera del modal (header) ----- */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -1069,14 +926,12 @@
   margin-bottom: 20px;
 }
 
-/* ----- Estilo para el título de la cabecera del modal ----- */
 .modal-header h2 {
   margin: 0;
-  color: var(--primary); /* Color primario para el título */
+  color: var(--primary);
   font-size: 22px;
 }
 
-/* ----- Estilo para el botón de cerrar el modal ----- */
 .close-modal {
   background: none;
   border: none;
@@ -1085,40 +940,16 @@
   color: var(--gray);
 }
 
-/* ----- Estilo para el cuerpo del modal ----- */
 .modal-body {
   padding: 15px 0;
 }
 
-/* ----- Estilo para los grupos de formulario ----- */
-.form-group {
-  margin-bottom: 15px;
-}
-
-/* ----- Estilo para las etiquetas del formulario ----- */
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 500;
-}
-
-/* ----- Estilo para los controles del formulario ----- */
-.form-control {
-  width: 100%;
-  padding: 10px 15px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-family: 'Poppins', sans-serif;
-}
-
-/* ----- Estilo para las filas del formulario ----- */
 .form-row {
   display: flex;
   align-items: flex-end;
   margin-bottom: 20px;
 }
 
-/* ----- Estilo para las acciones del modal ----- */
 .modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -1126,21 +957,18 @@
   margin-top: 20px;
 }
 
-/* ----- Usuarios Compartidos ----- */
 .shared-users-list {
   margin-top: 20px;
   border-top: 1px solid #eee;
   padding-top: 15px;
 }
 
-/* ----- Estilo para el título de la lista de usuarios ----- */
 .shared-users-list h3 {
   margin-bottom: 15px;
   font-size: 16px;
   color: var(--gray);
 }
 
-/* ----- Estilo para cada item de usuario compartido ----- */
 .shared-user-item {
   display: flex;
   align-items: center;
@@ -1152,72 +980,93 @@
   transition: all 0.2s;
 }
 
-/* ----- Estilo para el hover sobre un item de usuario ----- */
 .shared-user-item:hover {
   background-color: #e9ecef;
 }
 
-/* ----- Estilo para el item de usuario que es el propietario ----- */
 .shared-user-item.owner {
   background-color: rgba(240, 90, 126, 0.08);
   border-left: 3px solid var(--primary);
 }
 
-/* ----- Estilo para la información del usuario ----- */
 .shared-user-info {
   display: flex;
   align-items: center;
   flex: 1;
 }
 
-/* ----- Estilo para el correo del usuario compartido ----- */
 .shared-user-email {
   font-weight: 500;
-  color: #333;
+  color: var(--text);
 }
 
-/* ----- Estilo para los permisos del usuario ----- */
 .shared-user-permissions {
   margin-left: 8px;
   font-size: 13px;
   color: #6c757d;
 }
 
-/* ----- Estilo para las acciones disponibles en el item del usuario ----- */
 .shared-user-actions {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-/* ----- Estilo para la insignia de propietario ----- */
 .owner-badge {
   padding: 4px 8px;
   background-color: var(--primary);
-  color: white;
+  color: var(--white);
   border-radius: 12px;
   font-size: 12px;
   font-weight: 500;
 }
 
-/* ----- Estilo cuando no hay usuarios compartidos ----- */
 .empty-shared-users {
   color: var(--gray);
   text-align: center;
   padding: 20px;
 }
 
-/* ----- Estilo para el selector de permisos ----- */
 .permission-select {
   padding: 5px 10px;
   border-radius: 4px;
   border: 1px solid #ddd;
-  background-color: white;
+  background-color: var(--white);
   font-family: 'Poppins', sans-serif;
   font-size: 14px;
 }
 
-/* ----- Responsive ----- */
+.icon-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(108, 117, 125, 0.6);
+  transition: all 0.2s ease;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.icon-button:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--primary);
+}
+
+.icon-button i {
+  font-size: 18px;
+}
+
+.icon-button.edit-button:hover {
+  color: var(--secondary);
+}
+
+.icon-button.delete-button:hover {
+  color: #f44336;
+}
+
 @media (max-width: 1200px) {
   .kanban-board {
     grid-template-columns: repeat(2, 1fr);
@@ -1229,11 +1078,11 @@
     width: 100%;
     border-right: none;
   }
-  
+
   .task-detail {
     display: none;
   }
-  
+
   .task-detail.active {
     display: block;
     position: fixed;
@@ -1250,21 +1099,21 @@
   .sidebar {
     width: 240px;
   }
-  
+
   .sidebar-header h1 {
     font-size: 20px;
   }
-  
+
   .task-header {
     padding: 16px;
   }
-  
+
   .task-title h2 {
     font-size: 20px;
   }
 
   .kanban-board {
-    grid-template-columns: 1fr; 
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1272,100 +1121,30 @@
   .app-layout {
     flex-direction: column;
   }
-  
+
   .sidebar {
     width: 100%;
     height: auto;
   }
-  
+
   .categories {
     display: flex;
     overflow-x: auto;
     padding: 8px;
   }
-  
+
   .category-item {
     flex-direction: column;
     padding: 8px 12px;
     min-width: 80px;
   }
-  
+
   .add-category {
     min-width: 80px;
     justify-content: center;
   }
-  
+
   .user-profile {
     display: none;
   }
-}
-
-/* ----- Acciones de Categorías ----- */
-.category-actions {
-  display: flex;
-  gap: 8px;
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-
-}
-
-/* ----- Estilo para mostrar las acciones de categorías al pasar el mouse ----- */
-.category-item:hover .category-actions {
-  display: flex;
-}
-
-/* ----- Estilo para el botón de icono dentro de las acciones de categorías ----- */
-.icon-button {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: rgba(108, 117, 125, 0.6);
-  transition: all 0.2s ease;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-}
-
-/* Efecto hover en botones */
-.icon-button:hover {
-  background: rgba(0, 0, 0, 0.05);
-  color: var(--primary);
-}
-
-/* ----- Estilo para los iconos dentro del botón ----- */
-.icon-button i {
-  font-size: 18px;
-}
-
-/* ----- Estilo para el botón de edición al pasar el mouse ----- */
-.icon-button.edit-button:hover {
-  color: var(--secondary); /* Azul para editar */
-}
-
-/* ----- Estilo para el botón de eliminación al pasar el mouse ----- */
-.icon-button.delete-button:hover {
-  color: #f44336; /* Rojo para eliminar */
-}
-
-/* ----- Estilo para el botón de eliminación (clase btn-danger) ----- */
-.btn-danger {
-  background-color: #dc3545;
-  border-color: #dc3545;
-  color: white;
-}
-
-/* ----- Estilo para el botón de eliminación (hover) ----- */
-.btn-danger:hover {
-  background-color: #c82333;
-  border-color: #bd2130;
-}
-
-/* ----- Asegurar que los eventos de click sean independientes ----- */
-.category-actions button {
-  z-index: 2;
 }

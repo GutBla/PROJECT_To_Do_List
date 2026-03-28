@@ -1,0 +1,87 @@
+flowchart TB
+
+    subgraph CLIENTE[" CAPA DE PRESENTACIÓN (Frontend)"]
+        direction TB
+        LOGIN["Login / Registro\nHTML · CSS · auth.js"]
+        KANBAN["Tablero Kanban\nDrag & Drop · tasks.js"]
+        MODALES["Modales\nCrear · Editar · Compartir"]
+        NOTIF["Notificaciones\nToast · shared.js"]
+    end
+
+    subgraph SERVIDOR["CAPA DE APLICACIÓN (Backend — Flask)"]
+        direction TB
+        
+        subgraph CONTROLADOR["Controlador (Rutas)"]
+            R_AUTH["/auth/login\n/auth/register\n/auth/logout"]
+            R_TAREAS["/api/tareas\nCRUD"]
+            R_CATEG["/api/categorias\nCRUD"]
+            R_PERMISOS["/api/tareas/:id/permisos"]
+        end
+        
+        subgraph SEGURIDAD["Seguridad"]
+            CSRF["CSRF (Flask-WTF)"]
+            HASH["Password Hashing (PBKDF2)"]
+            SESSION["Gestión de Sesiones (Flask)"]
+        end
+        
+        subgraph MODELO["Modelo (SQLAlchemy ORM)"]
+            M_USUARIO["Usuario"]
+            M_TAREA["Tarea"]
+            M_CATEG["Categoría / CategoriaPredeterminada"]
+            M_UTAREA["UsuarioTarea"]
+            M_LOG["LogTareaEliminada"]
+        end
+    end
+
+    subgraph BD["CAPA DE DATOS (MySQL 8.0)"]
+        direction LR
+        
+        subgraph TABLAS["Tablas"]
+            T1[(Usuario)]
+            T2[(Tarea)]
+            T3[(Categoria)]
+            T4[(CategoriaPredeterminada)]
+            T5[(UsuarioTarea)]
+            T6[(LogTareaEliminada)]
+        end
+        
+        subgraph OBJETOS_BD["Objetos de BD"]
+            TRG["Trigger:\nlog_tarea_eliminada"]
+            PROC["Stored Procedure:\nactualizar_tareas_vencidas"]
+            IDX["Índices:\nemail · estado · fecha_vencimiento"]
+        end
+    end
+
+    ENV[".env\nMySQL credentials\nSECRET_KEY"]
+    CFG["config.py\nClass Config\npython-dotenv"]
+
+    CLIENTE -- "HTTP Request (JSON + CSRF token)" --> CONTROLADOR
+    CONTROLADOR -- "HTTP Response (JSON / HTML)" --> CLIENTE
+    
+    CONTROLADOR --> SEGURIDAD
+    SEGURIDAD --> MODELO
+    
+    MODELO -- "SQLAlchemy (mysql+pymysql)" --> TABLAS
+    TABLAS --> OBJETOS_BD
+    
+    ENV --> CFG
+    CFG --> SERVIDOR
+    
+    LOGIN -.-> R_AUTH
+    KANBAN -.-> R_TAREAS
+    MODALES -.-> R_TAREAS
+    MODALES -.-> R_PERMISOS
+    NOTIF -.-> R_TAREAS
+    
+    classDef cliente fill:#FFF5B7,stroke:#F05A7E,stroke-width:2px,color:#333,rx:8
+    classDef servidor fill:#e8f4f8,stroke:#0A97B0,stroke-width:2px,color:#333,rx:8
+    classDef bd fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#333,rx:8
+    classDef seg fill:#fce4ec,stroke:#F05A7E,stroke-width:2px,color:#333,rx:8
+    classDef config fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#333,rx:8
+
+    class LOGIN,KANBAN,MODALES,NOTIF cliente
+    class R_AUTH,R_TAREAS,R_CATEG,R_PERMISOS servidor
+    class M_USUARIO,M_TAREA,M_CATEG,M_UTAREA,M_LOG servidor
+    class CSRF,HASH,SESSION seg
+    class T1,T2,T3,T4,T5,T6,TRG,PROC,IDX bd
+    class ENV,CFG config

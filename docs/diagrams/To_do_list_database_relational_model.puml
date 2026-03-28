@@ -2,54 +2,70 @@
 
 hide circle
 skinparam linetype ortho
+skinparam nodesep 80
+skinparam ranksep 40
+left to right direction
 
-entity Usuario {
-  * id : INT
-  --
-  * email : VARCHAR(255)
-  * password_hash : VARCHAR(255)
-  * nombre_completo : VARCHAR(255)
-  fecha_creacion : TIMESTAMP
-  fecha_actualizacion : TIMESTAMP
+skinparam note {
+  BackgroundColor #FEF9E6
+  BorderColor #A9A9A9
+  FontSize 10
+  FontName Arial
+  Width 150
 }
 
-entity CategoriaPredeterminada {
-  * id : INT
-  --
-  * nombre : VARCHAR(255)
-  descripcion : TEXT
+
+together {
+  entity Usuario {
+    * id : INT
+    --
+    * email : VARCHAR(255)
+    * password_hash : VARCHAR(255)
+    * nombre_completo : VARCHAR(255)
+    fecha_creacion : TIMESTAMP
+    fecha_actualizacion : TIMESTAMP
+  }
+
+  entity CategoriaPredeterminada {
+    * id : INT
+    --
+    * nombre : VARCHAR(255)
+    descripcion : TEXT
+  }
+
+  entity Categoria {
+    * id : INT
+    --
+    * usuario_id : INT
+    categoria_predeterminada_id : INT
+    es_predeterminada : BOOLEAN
+    fecha_creacion : TIMESTAMP
+    fecha_actualizacion : TIMESTAMP
+  }
 }
 
-entity Categoria {
-  * id : INT
-  --
-  * usuario_id : INT
-  categoria_predeterminada_id : INT
-  es_predeterminada : BOOLEAN
-  fecha_creacion : TIMESTAMP
-  fecha_actualizacion : TIMESTAMP
-}
+together {
+  entity Tarea {
+    * id : INT
+    --
+    categoria_id : INT
+    * usuario_id : INT
+    * titulo : VARCHAR(255)
+    descripcion : TEXT
+    estado : ENUM('NUEVA','EN_PROGRESO','COMPLETADA','PENDIENTE')
+    fecha_vencimiento : DATE
+    fecha_creacion : TIMESTAMP
+    fecha_actualizacion : TIMESTAMP
+    fecha_completado : TIMESTAMP
+  }
 
-entity Tarea {
-  * id : INT
-  --
-  categoria_id : INT
-  * usuario_id : INT
-  * titulo : VARCHAR(255)
-  descripcion : TEXT
-  estado : ENUM('NUEVA', 'EN_PROGRESO', 'COMPLETADA', 'PENDIENTE')
-  fecha_vencimiento : DATE
-  fecha_creacion : TIMESTAMP
-  fecha_actualizacion : TIMESTAMP
-  fecha_completado : TIMESTAMP
-}
-
-entity UsuarioTarea {
-  * usuario_id : INT
-  * tarea_id : INT
-  --
-  fecha_asignacion : TIMESTAMP
-  permisos : ENUM('LECTURA', 'ESCRITURA', 'PROPIETARIO')
+  entity UsuarioTarea {
+    * usuario_id : INT
+    * tarea_id : INT
+    --
+    fecha_asignacion : TIMESTAMP
+    permisos : ENUM('LECTURA','ESCRITURA','PROPIETARIO')
+  }
 }
 
 entity LogTareaEliminada {
@@ -59,40 +75,58 @@ entity LogTareaEliminada {
   usuario_id : INT
   titulo : VARCHAR(255)
   descripcion : TEXT
-  estado : ENUM('NUEVA', 'EN_PROGRESO', 'COMPLETADA', 'PENDIENTE')
+  estado : ENUM('NUEVA','EN_PROGRESO','COMPLETADA','PENDIENTE')
   fecha_vencimiento : DATE
   fecha_completado : TIMESTAMP
   fecha_eliminacion : TIMESTAMP
 }
 
-Usuario ||--o{ Categoria : "1:N"
+Usuario         ||--o{ Categoria           : "1:N"
 CategoriaPredeterminada ||--o{ Categoria : "1:N (predeterminadas)"
-Categoria ||--o{ Tarea : "1:N (opcional)"
-Usuario ||--o{ Tarea : "1:N (propietario)"
-UsuarioTarea }|..|| Usuario : "M:N (usuarios asignados)"
-UsuarioTarea }|..|| Tarea : "M:N (tareas asignadas)"
-Tarea ||--o{ LogTareaEliminada : "1:N (registro de eliminación)"
-Usuario ||--o{ LogTareaEliminada : "1:N (usuario que eliminó)"
+Categoria       ||--o{ Tarea               : "1:N (opcional)"
+Usuario         ||--o{ Tarea               : "1:N (propietario)"
 
-note top of Categoria
-  FK usuario_id -> Usuario.id (ON DELETE CASCADE)
-  FK categoria_predeterminada_id -> CategoriaPredeterminada.id (ON DELETE SET NULL)
+UsuarioTarea    }|..|| Usuario             : "M:N (usuarios asignados)"
+UsuarioTarea    }|..|| Tarea               : "M:N (tareas asignadas)"
+
+Tarea           ||--o{ LogTareaEliminada   : "1:N (registro de eliminación)"
+Usuario         ||--o{ LogTareaEliminada   : "1:N (usuario que eliminó)"
+
+
+note right of Categoria
+  **FK**
+  * usuario_id → Usuario.id 
+  (ON DELETE CASCADE)
+  * categoria_predeterminada_id → CategoriaPredeterminada.id 
+  (ON DELETE SET NULL)
 end note
 
-note top of Tarea
-  FK categoria_id -> Categoria.id (ON DELETE SET NULL)
-  FK usuario_id -> Usuario.id (ON DELETE CASCADE)
+note right of Tarea
+  **FK**
+  * categoria_id → Categoria.id 
+  (ON DELETE SET NULL)
+
+  * usuario_id → Usuario.id 
+  (ON DELETE CASCADE)
 end note
 
-note top of UsuarioTarea
-  PK (usuario_id, tarea_id)
-  FK usuario_id -> Usuario.id (ON DELETE CASCADE)
-  FK tarea_id -> Tarea.id (ON DELETE CASCADE)
+note right of UsuarioTarea
+  **PK** (usuario_id, tarea_id)
+  **FK**
+  * usuario_id → Usuario.id 
+  (ON DELETE CASCADE)
+
+  * tarea_id → Tarea.id 
+  (ON DELETE CASCADE)
 end note
 
-note top of LogTareaEliminada
-  FK tarea_id -> Tarea.id (lógico, no físico)
-  FK usuario_id -> Usuario.id (lógico, no físico)
+note right of LogTareaEliminada
+  **FK (lógico)**
+  * tarea_id → Tarea.id 
+  (lógico, no físico)
+
+  * usuario_id → Usuario.id 
+  (lógico, no físico)
 end note
 
 @enduml
