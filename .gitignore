@@ -1,26 +1,113 @@
 # Entornos virtuales de Python
 venv/
 env/
+ENV/
+env.bak/
+venv.bak/
 
 # Archivos compilados y caché de Python
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
 
 # Archivos de configuración o variables de entorno
 *.env
+.flaskenv
+.env.local
+.env.*.local
 
 # Archivos de registro y temporales
 *.log
 *.tmp
+*.pid
+*.seed
+*.pid.lock
 
 # Sistema operativo
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+Desktop.ini
 
-# Ignorar la carpeta de configuración del IDE (PyCharm/IntelliJ IDEA)
+# IDE y editores
 .idea/
-
-# Si usas VSCode, puedes incluir:
 .vscode/
+*.swp
+*.swo
+*~
+.vim/
+.sublime-project
+.sublime-workspace
+.project
+.pydevproject
+.settings/
 
+# Base de datos local (SQLite)
+*.db
+*.sqlite
+*.sqlite3
+
+# Archivos de distribución y empaquetado
+build/
+dist/
+*.egg-info/
+*.egg
+MANIFEST
+pip-wheel-metadata/
+share/python-wheels/
+
+# Instancia de Flask (por si se usa instance folder)
+instance/
+web-app/
+
+# Archivos de documentación generados
+docs/_build/
+site/
+
+# Cobertura de pruebas
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Archivos de logs de la aplicación (si se generan en carpeta)
+logs/
+*.log
+
+# Archivos de migraciones (opcional, si no se versionan)
+# migrations/
+
+# Archivos de configuración local del proyecto
+config.local.py
+.env.local
+
+# Archivos de capturas o imágenes de pruebas
+screenshots/
+*.png
+*.jpg
+*.gif
+
+# Archivos de backup
+*.bak
+*.orig
+*.old
+
+git rm -r --cached .idea/
